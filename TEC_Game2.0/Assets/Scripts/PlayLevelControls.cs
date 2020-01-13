@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class PlayLevelControls : MonoBehaviour
 {
@@ -17,7 +18,9 @@ public class PlayLevelControls : MonoBehaviour
 
     public void NullatorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.AddComponent<MouseListener>();
+        map.GetComponent<MouseListener>().Init("Nullator");
     }
 
     public void NoratorPressed()
