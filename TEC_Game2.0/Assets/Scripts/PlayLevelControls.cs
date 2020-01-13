@@ -19,7 +19,7 @@ public class PlayLevelControls : MonoBehaviour
     public void NullatorPressed()
     {
         GameObject map = GameObject.Find("Map");
-        map.AddComponent<MouseListener>();
+        map.GetComponent<MouseListener>().enabled = true;
         map.GetComponent<MouseListener>().Init("Nullator");
     }
 

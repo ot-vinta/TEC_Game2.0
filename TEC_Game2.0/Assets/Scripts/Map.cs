@@ -8,11 +8,11 @@ using Vector3 = UnityEngine.Vector3;
 
 public class Map : MonoBehaviour, IDragHandler
 {
-    private const double MapXLeft = 6.8;
-    private const double MapXRight = -5.9;
-    private const double MapYUp = -6.2;
-    private const double MapYDown = 6.6;
-    public const double Scale = 0.017;
+    private const double MapXLeft = -9.2;
+    private const double MapXRight = -21.8;
+    private const double MapYUp = -18.1;
+    private const double MapYDown = -5.2;
+    public const double Scale = 0.0167;
     public const int MapSizeX = 60;
     public const int MapSizeY = 45;
 
