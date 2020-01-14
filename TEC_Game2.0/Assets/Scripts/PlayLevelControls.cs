@@ -19,13 +19,15 @@ public class PlayLevelControls : MonoBehaviour
     public void NullatorPressed()
     {
         GameObject map = GameObject.Find("Map");
-        map.GetComponent<MouseListener>().enabled = true;
-        map.GetComponent<MouseListener>().Init("Nullator");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Nullator");
     }
 
     public void NoratorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Norator");
     }
 
     public void WirePressed()
