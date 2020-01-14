@@ -32,7 +32,9 @@ public class PlayLevelControls : MonoBehaviour
 
     public void WirePressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Wire");
     }
 
     public void DeletePressed()
