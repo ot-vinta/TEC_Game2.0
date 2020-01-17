@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: CanvasLayer
+    uniqueID: 4071657829
+    locked: 0
+  - name: MapLayer
+    uniqueID: 2639227411
+    locked: 0
+  - name: MenuLayer
+    uniqueID: 1631888673
+    locked: 0

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.Tilemaps;
 
 public class PlayLevelControls : MonoBehaviour
 {
@@ -17,17 +18,23 @@ public class PlayLevelControls : MonoBehaviour
 
     public void NullatorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Nullator");
     }
 
     public void NoratorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Norator");
     }
 
     public void WirePressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Wire");
     }
 
     public void DeletePressed()
