@@ -22,17 +22,23 @@ public class NewLevelControls : MonoBehaviour
 
     public void ConductorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Conductor");
     }
 
     public void ResistorPressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Resistor");
     }
 
     public void WirePressed()
     {
-        //TO DO
+        GameObject map = GameObject.Find("Map");
+        map.GetComponent<TilePlacer>().enabled = true;
+        map.GetComponent<TilePlacer>().Init("Wire");
     }
 
     public void DeletePressed()
