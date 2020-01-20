@@ -89,6 +89,7 @@ public class TilePlacer : MonoBehaviour
         }
 
         elementTile.name = type;
+        sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
     }
 
     private void InitTile(string path)

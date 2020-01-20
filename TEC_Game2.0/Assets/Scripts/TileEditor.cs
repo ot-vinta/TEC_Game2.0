@@ -128,7 +128,11 @@ public class TileEditor : MonoBehaviour
             if ((wire.pivotPosition.x == pos.x && wire.secondPosition.x == pos.x &&
                  wire.pivotPosition.y <= pos.y && wire.secondPosition.y >= pos.y) ||
                 (wire.pivotPosition.y == pos.y && wire.secondPosition.y == pos.y &&
-                 wire.pivotPosition.x <= pos.x && wire.secondPosition.x >= pos.x))
+                 wire.pivotPosition.x <= pos.x && wire.secondPosition.x >= pos.x) || 
+                (wire.pivotPosition.x == pos.x && wire.secondPosition.x == pos.x &&
+                 wire.pivotPosition.y >= pos.y && wire.secondPosition.y <= pos.y) ||
+                (wire.pivotPosition.y == pos.y && wire.secondPosition.y == pos.y &&
+                 wire.pivotPosition.x >= pos.x && wire.secondPosition.x <= pos.x))
             {
                 selectedPos = wire.pivotPosition;
                 return map.GetTile<Tile>(wire.pivotPosition);
