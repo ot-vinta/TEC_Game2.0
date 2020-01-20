@@ -160,7 +160,7 @@ public class TileEditor : MonoBehaviour
 
     private void DeleteElement(Vector3Int pos)
     {
-        Scheme.RemoveElement();
+        Scheme.RemoveElement(pos);
         map.SetTile(pos, new Tile());
     }
 
