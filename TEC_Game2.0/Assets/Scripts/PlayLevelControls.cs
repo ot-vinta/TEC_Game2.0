@@ -26,8 +26,7 @@ public class PlayLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Nullator");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Nullator", 0);
     }
 
     public void NoratorPressed()
@@ -35,8 +34,7 @@ public class PlayLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Norator");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Norator", 0);
     }
 
     public void WirePressed()
@@ -44,8 +42,7 @@ public class PlayLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Wire");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Wire", 0);
     }
 
     public void DeletePressed()

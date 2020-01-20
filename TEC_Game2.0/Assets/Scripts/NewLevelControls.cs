@@ -33,8 +33,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Conductor");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Conductor", 0);
     }
 
     public void ResistorPressed()
@@ -42,8 +41,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Resistor");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Resistor", 0);
     }
 
     public void WirePressed()
@@ -51,8 +49,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
-        map.GetComponent<TilePlacer>().Init("Wire");
-        map.GetComponent<TilePlacer>().SetAngle(0);
+        map.GetComponent<TilePlacer>().Init("Wire", 0);
     }
 
     public void DeletePressed()

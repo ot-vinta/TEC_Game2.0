@@ -69,7 +69,6 @@ public class TileEditor : MonoBehaviour
             }
 
             selectedTile = null;
-            SetDefault();
         }
     }
 
@@ -177,8 +176,7 @@ public class TileEditor : MonoBehaviour
         if (mapObject.GetComponent<TileEditor>().GetStatus() != StatusDefault)
             mapObject.GetComponent<TileEditor>().SetDefault();
         mapObject.GetComponent<TilePlacer>().enabled = true;
-        mapObject.GetComponent<TilePlacer>().SetAngle(Scheme.GetRotation(pos));
-        mapObject.GetComponent<TilePlacer>().Init(tile.name);
+        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos));
 
         DeleteElement(pos);
     }

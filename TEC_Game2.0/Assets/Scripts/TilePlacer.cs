@@ -42,7 +42,7 @@ public class TilePlacer : MonoBehaviour
             PlaceWire();
     }
 
-    public void Init(string type)
+    public void Init(string type, int startAngle)
     {
         mapObject = GameObject.Find("Map");
         map = mapObject.GetComponent<Tilemap>();
@@ -50,7 +50,7 @@ public class TilePlacer : MonoBehaviour
         horizontalPlaced = true;
         leftMousePressed = false;
         wirePlacing = false;
-        angle = 0.0f;
+        angle = startAngle;
 
         empty = new GameObject();
         empty.transform.localScale = new Vector3(0.5f, 0.5f, 1.0f);
