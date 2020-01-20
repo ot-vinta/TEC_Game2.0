@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Threading.Tasks;
+using Assets.Scripts;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -26,7 +28,6 @@ public class TilePlacer : MonoBehaviour
     private bool wirePlacing;
     private int wireEndsCount;
     private Vector3 wireFirstPosition;
-    private int wireZPosition = 1;
 
 
     // Update is called once per frame
@@ -86,6 +87,8 @@ public class TilePlacer : MonoBehaviour
                 InitWire(path, new Vector2(0.5f, 0.5f), 1.0f);
                 break;
         }
+
+        elementTile.name = type;
     }
 
     private void InitTile(string path)
@@ -139,6 +142,14 @@ public class TilePlacer : MonoBehaviour
         {
             PlaceTile(Vector3.one, 1);
             Destroy(empty);
+
+            //------------------------------------------------------
+            //Add classes for chain elements
+            //Change to specific element class(TO DO)
+            Vector3Int pos = map.WorldToCell(sr.transform.position);
+            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1)));
+            //------------------------------------------------------
+
             mapObject.GetComponent<TilePlacer>().enabled = false;
         }
     }
@@ -167,8 +178,7 @@ public class TilePlacer : MonoBehaviour
                 Vector2 delta = new Vector2(0.25f, 0.25f);
                 position = map.CellToWorld(map.WorldToCell(position));
 
-                wireFirstPosition = new Vector3(position.x + delta.x, position.y + delta.x, 1);
-                Debug.Log(wireFirstPosition);
+                wireFirstPosition = new Vector3(position.x + delta.x, position.y + delta.x, Scheme.GetWiresCount() + 2);
                 wireEndsCount = 1;
 
                 string path = "Sprites/HalfWireSprite";
@@ -184,8 +194,7 @@ public class TilePlacer : MonoBehaviour
             Vector2 delta = new Vector2(0.25f, 0.25f);
             position = map.CellToWorld(map.WorldToCell(position));
 
-            Vector3 wireSecondPosition = new Vector3(position.x + delta.x, position.y + delta.x, 1);
-            Debug.Log(wireSecondPosition);
+            Vector3 wireSecondPosition = new Vector3(position.x + delta.x, position.y + delta.x, Scheme.GetWiresCount() + 2);
             if (Math.Abs(wireSecondPosition.x - wireFirstPosition.x) >
                 Math.Abs(wireSecondPosition.y - wireFirstPosition.y))
             {
@@ -203,9 +212,15 @@ public class TilePlacer : MonoBehaviour
             if (Input.GetMouseButtonDown(0))
             {
                 wireEndsCount = 2;
-                PlaceTile(new Vector3(scale, 1, 1), wireZPosition);
-                wireZPosition++;
+                PlaceTile(new Vector3(scale, 1, 1), Scheme.GetWiresCount() + 2);
                 Destroy(empty);
+
+                Vector3Int pos1 = map.WorldToCell(wireFirstPosition);
+                pos1 = new Vector3Int(pos1.x, pos1.y, Scheme.GetWiresCount() + 2);
+                Vector3Int pos2 = map.WorldToCell(wireSecondPosition);
+                pos2 = new Vector3Int(pos2.x, pos2.y, Scheme.GetWiresCount() + 2);
+                AddElementToScheme(new Wire(pos1, pos2));
+
                 mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
@@ -228,7 +243,6 @@ public class TilePlacer : MonoBehaviour
     private void RotateAndScaleWire(float angle, float scale)
     {
         angle -= sr.transform.eulerAngles.z;
-        Debug.Log(sr.transform.rotation.z);
         sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
         scale /= 2;
         empty.transform.localScale = new Vector3(scale, 0.5f, 1.0f);
@@ -242,8 +256,8 @@ public class TilePlacer : MonoBehaviour
         sr.transform.position = new Vector3(position.x + delta.x, position.y + delta.x, 0);
     }
 
-    public void SetLeftMousePressed()
+    private void AddElementToScheme(ElementBase element)
     {
-        leftMousePressed = true;
+        Scheme.AddElement(element);
     }
 }

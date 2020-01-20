@@ -1780,6 +1780,7 @@ GameObject:
   - component: {fileID: 947215021}
   - component: {fileID: 947215020}
   - component: {fileID: 947215019}
+  - component: {fileID: 947215022}
   m_Layer: 0
   m_Name: Map
   m_TagString: Untagged
@@ -26172,9 +26173,13 @@ Tilemap:
   m_TileAssetArray:
   - m_RefCount: 2700
     m_Data: {fileID: 11400000, guid: e2be2c783b789cc45947fac11572cc53, type: 2}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileSpriteArray:
   - m_RefCount: 2700
     m_Data: {fileID: 21300000, guid: cfc57a717bce9bc44a05e7c916df5964, type: 3}
+  - m_RefCount: 0
+    m_Data: {fileID: 0}
   m_TileMatrixArray:
   - m_RefCount: 2700
     m_Data:
@@ -26196,29 +26201,31 @@ Tilemap:
       e33: 1
   - m_RefCount: 0
     m_Data:
-      e00: 0.000000024073486
+      e00: -0.00000028629597
       e01: NaN
       e02: 0
-      e03: 0.000000024073458
-      e10: 1.47e-43
+      e03: -0.00000028629552
+      e10: 2.83e-43
       e11: NaN
       e12: 7.34684e-40
-      e13: 1.47e-43
+      e13: 2.83e-43
       e20: 0
-      e21: 5.2e-44
-      e22: 1.2790064e+14
+      e21: 4.9e-44
+      e22: -1520844
       e23: 0
       e30: 0
-      e31: 2.8e-44
+      e31: 3.5e-44
       e32: 4.5905e-41
       e33: 0
   m_TileColorArray:
   - m_RefCount: 2700
     m_Data: {r: 1, g: 1, b: 1, a: 1}
+  - m_RefCount: 0
+    m_Data: {r: 0, g: 0, b: 0, a: 0}
   m_AnimationFrameRate: 1
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_Origin: {x: 0, y: 0, z: 0}
-  m_Size: {x: 61, y: 46, z: 1}
+  m_Size: {x: 61, y: 46, z: 2}
   m_TileAnchor: {x: 0.5, y: 0.5, z: 0}
   m_TileOrientation: 0
   m_TileOrientationMatrix:
@@ -26238,6 +26245,18 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
+--- !u!114 &947215022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 947215017}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5d0e46f18aea22548a8b7411da5fe227, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1000318507
 GameObject:
   m_ObjectHideFlags: 0
