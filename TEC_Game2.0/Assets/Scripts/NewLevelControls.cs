@@ -34,6 +34,7 @@ public class NewLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         map.GetComponent<TilePlacer>().Init("Conductor");
+        map.GetComponent<TilePlacer>().SetAngle(0);
     }
 
     public void ResistorPressed()
@@ -42,6 +43,7 @@ public class NewLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         map.GetComponent<TilePlacer>().Init("Resistor");
+        map.GetComponent<TilePlacer>().SetAngle(0);
     }
 
     public void WirePressed()
@@ -50,6 +52,7 @@ public class NewLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         map.GetComponent<TilePlacer>().Init("Wire");
+        map.GetComponent<TilePlacer>().SetAngle(0);
     }
 
     public void DeletePressed()

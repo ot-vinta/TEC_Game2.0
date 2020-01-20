@@ -259,4 +259,11 @@ public class TilePlacer : MonoBehaviour
     {
         Scheme.AddElement(element);
     }
+
+    public void SetAngle(int angle)
+    {
+        this.angle = angle;
+        if (sr != null)
+            sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
+    }
 }

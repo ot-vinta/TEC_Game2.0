@@ -9,9 +9,10 @@ namespace Assets.Scripts
 {
     class ChainElement : ElementBase
     {
-
+        public int angle;
         public ChainElement(Vector3Int position) : base(position)
         {
+            angle = 0;
         }
     }
 }

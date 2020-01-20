@@ -33,7 +33,6 @@ public class TileEditor : MonoBehaviour
         {
             prevTile = selectedTile;
             selectedTile = FindTile(ref mousePos);
-            //Debug.Log(selectedTile);
 
             if (selectedTile != null && selectedTile != prevTile)
             {
@@ -122,7 +121,6 @@ public class TileEditor : MonoBehaviour
         Vector3Int pos = selectedPos;
         for (int i = 1; i <= Scheme.GetElementsCount(); i++)
         {
-            Debug.Log(Scheme.GetElement(i));
             Wire wire = null;
             if (Scheme.GetElement(i) is Wire)
                 wire = (Wire) Scheme.GetElement(i);
@@ -143,7 +141,6 @@ public class TileEditor : MonoBehaviour
 
     private void MarkTile(Tile tile, Vector3Int pos)
     {
-        Debug.Log("Changing color");
         if (tile != null)
         {
             map.SetTileFlags(new Vector3Int(pos.x, pos.y, pos.z), TileFlags.None);
@@ -168,12 +165,11 @@ public class TileEditor : MonoBehaviour
 
     private void RotateElement(Vector3Int pos, Tile tile)
     {
-        Quaternion rotation = Quaternion.Euler(0, 0, 180);
-        var m = tile.transform;
-
-        m.SetTRS(Vector3.zero, rotation, Vector3.one);
-        tile.transform = m;
-        map.RefreshTile(pos);
+        int angle = Scheme.GetRotation(pos);
+        angle += 90 % 360;
+        Scheme.RotateElement(pos, angle);
+        Quaternion rotation = Quaternion.Euler(0, 0, angle);
+        map.SetTransformMatrix(pos, Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
     }
 
     private void MoveElement(Vector3Int pos, Tile tile)
@@ -181,6 +177,7 @@ public class TileEditor : MonoBehaviour
         if (mapObject.GetComponent<TileEditor>().GetStatus() != StatusDefault)
             mapObject.GetComponent<TileEditor>().SetDefault();
         mapObject.GetComponent<TilePlacer>().enabled = true;
+        mapObject.GetComponent<TilePlacer>().SetAngle(Scheme.GetRotation(pos));
         mapObject.GetComponent<TilePlacer>().Init(tile.name);
 
         DeleteElement(pos);

@@ -47,6 +47,18 @@ namespace Assets.Scripts
             return elements[id - 1];
         }
 
+        public static int GetRotation(Vector3Int pos)
+        {
+            ChainElement elem = (ChainElement) chainElements[pos.x, pos.y, pos.z];
+            return elem.angle;
+        }
+
+        public static void RotateElement(Vector3Int pos, int angle)
+        {
+            ChainElement elem = (ChainElement)chainElements[pos.x, pos.y, pos.z];
+            elem.angle = angle;
+        }
+
         public static int GetWiresCount()
         {
             return wiresCount;
