@@ -12,6 +12,10 @@ public class TileEditor : MonoBehaviour
     private Tile prevTile, selectedTile;
     private Vector3Int prevPos;
     private string editStatus;
+    private bool escapePressed;
+    private ElementBase backupElement;
+    private Vector3Int backupPos;
+    private Tile backupTile;
 
     public const string StatusDelete = "delete";
     public const string StatusRotate = "rotate";
@@ -24,6 +28,7 @@ public class TileEditor : MonoBehaviour
         map = mapObject.GetComponent<Tilemap>();
         editStatus = StatusDefault;
         selectedTile = null;
+        escapePressed = false;
     }
 
     void Update()
@@ -43,6 +48,11 @@ public class TileEditor : MonoBehaviour
                 UnmarkTile(prevTile, prevPos);
 
             prevPos = mousePos;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape) && editStatus != StatusDefault)
+        {
+            SetDefault();
         }
 
         if (prevTile != null && editStatus == StatusDefault)
@@ -69,6 +79,13 @@ public class TileEditor : MonoBehaviour
             }
 
             selectedTile = null;
+        }
+
+        if (escapePressed)
+        {
+            Scheme.AddElement(backupElement);
+            map.SetTile(backupPos, backupTile);
+            escapePressed = false;
         }
     }
 
@@ -182,7 +199,16 @@ public class TileEditor : MonoBehaviour
         mapObject.GetComponent<TilePlacer>().enabled = true;
         mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos));
 
+        backupElement = Scheme.GetElement(pos);
+        backupPos = pos;
+        backupTile = tile;
+
         DeleteElement(pos);
+    }
+
+    public void PressEscape()
+    {
+        escapePressed = true;
     }
 
     public void SetDelete()

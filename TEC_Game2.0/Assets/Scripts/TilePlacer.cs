@@ -33,6 +33,14 @@ public class TilePlacer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Destroy(empty);
+            mapObject.GetComponent<TileEditor>().PressEscape();
+            mapObject.GetComponent<TilePlacer>().enabled = false;
+        }
+
         if (!wirePlacing)
         {
             MoveSprite();
