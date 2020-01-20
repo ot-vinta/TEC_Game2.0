@@ -81,7 +81,7 @@ public class TileEditor : MonoBehaviour
             selectedTile = null;
         }
 
-        if (escapePressed)
+        if (escapePressed && editStatus == StatusMove)
         {
             Scheme.AddElement(backupElement);
             map.SetTile(backupPos, backupTile);

@@ -159,7 +159,7 @@ public class TilePlacer : MonoBehaviour
             AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1)));
             //------------------------------------------------------
 
-            mapObject.GetComponent<TilePlacer>().enabled = false;
+            Init(elementTile.name, 0);
         }
     }
 
@@ -230,7 +230,7 @@ public class TilePlacer : MonoBehaviour
                 pos2 = new Vector3Int(pos2.x, pos2.y, Scheme.GetWiresCount() + 2);
                 AddElementToScheme(new Wire(pos1, pos2));
 
-                mapObject.GetComponent<TilePlacer>().enabled = false;
+                Init("Wire", 0);
             }
         }
     }
