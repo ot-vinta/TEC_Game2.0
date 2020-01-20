@@ -60,10 +60,12 @@ public class TileEditor : MonoBehaviour
                     DeleteElement(mousePos);
                     break;
                 case StatusRotate:
-                    RotateElement(mousePos);
+                    if (selectedTile.name != "Wire")
+                        RotateElement(mousePos, selectedTile);
                     break;
                 case StatusMove:
-                    MoveElement(mousePos);
+                    if (selectedTile.name != "Wire")
+                        MoveElement(mousePos, selectedTile);
                     break;
             }
 
@@ -164,14 +166,24 @@ public class TileEditor : MonoBehaviour
         map.SetTile(pos, new Tile());
     }
 
-    private void RotateElement(Vector3Int pos)
+    private void RotateElement(Vector3Int pos, Tile tile)
     {
+        Quaternion rotation = Quaternion.Euler(0, 0, 180);
+        var m = tile.transform;
 
+        m.SetTRS(Vector3.zero, rotation, Vector3.one);
+        tile.transform = m;
+        map.RefreshTile(pos);
     }
 
-    private void MoveElement(Vector3Int pos)
+    private void MoveElement(Vector3Int pos, Tile tile)
     {
+        if (mapObject.GetComponent<TileEditor>().GetStatus() != StatusDefault)
+            mapObject.GetComponent<TileEditor>().SetDefault();
+        mapObject.GetComponent<TilePlacer>().enabled = true;
+        mapObject.GetComponent<TilePlacer>().Init(tile.name);
 
+        DeleteElement(pos);
     }
 
     public void SetDelete()

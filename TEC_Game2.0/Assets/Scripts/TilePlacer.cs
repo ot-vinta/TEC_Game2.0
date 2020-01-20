@@ -232,7 +232,6 @@ public class TilePlacer : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
         var m = elementTile.transform;
 
-        //Here we can add element to list later
         m.SetTRS(Vector3.zero, rotation, scale);
         elementTile.transform = m;
         map.SetTile(new Vector3Int((int) position.x, (int) position.y, zPosition), elementTile);
