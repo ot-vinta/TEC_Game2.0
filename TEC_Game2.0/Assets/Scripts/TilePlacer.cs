@@ -2,10 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading.Tasks;
 using Assets.Scripts;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
@@ -33,7 +36,6 @@ public class TilePlacer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Destroy(empty);
@@ -147,7 +149,7 @@ public class TilePlacer : MonoBehaviour
             MoveToNearestCell(position);
         }
         
-        if (Input.GetMouseButtonDown(0) && !leftMousePressed)
+        if (Input.GetMouseButtonDown(0) && !leftMousePressed && !PressedUnderButton())
         {
             PlaceTile(Vector3.one, 1);
             Destroy(empty);
@@ -160,6 +162,11 @@ public class TilePlacer : MonoBehaviour
             //------------------------------------------------------
 
             Init(elementTile.name, 0);
+        }
+        else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+        {
+            Destroy(empty);
+            mapObject.GetComponent<TilePlacer>().enabled = false;
         }
     }
 
@@ -182,7 +189,7 @@ public class TilePlacer : MonoBehaviour
 
             MoveToNearestCell(position);
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !PressedUnderButton())
             {
                 Vector2 delta = new Vector2(0.25f, 0.25f);
                 position = map.CellToWorld(map.WorldToCell(position));
@@ -192,6 +199,11 @@ public class TilePlacer : MonoBehaviour
 
                 string path = "Sprites/HalfWireSprite";
                 InitWire(path, new Vector2(0.0f, 0.5f), 0.6f);
+            }
+            else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+            {
+                Destroy(empty);
+                mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
         else if (wireEndsCount == 1)
@@ -218,7 +230,7 @@ public class TilePlacer : MonoBehaviour
                 RotateAndScaleWire(angle, scale);
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !PressedUnderButton())
             {
                 wireEndsCount = 2;
                 PlaceTile(new Vector3(scale, 1, 1), Scheme.GetWiresCount() + 2);
@@ -231,6 +243,11 @@ public class TilePlacer : MonoBehaviour
                 AddElementToScheme(new Wire(pos1, pos2));
 
                 Init("Wire", 0);
+            }
+            else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+            {
+                Destroy(empty);
+                mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
     }
@@ -262,6 +279,41 @@ public class TilePlacer : MonoBehaviour
         Vector3 position = map.CellToWorld(map.WorldToCell(newPosition));
 
         sr.transform.position = new Vector3(position.x + delta.x, position.y + delta.x, 0);
+    }
+
+    private bool PressedUnderButton()
+    {
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        GameObject  playButton = GameObject.Find("PlayButton");
+        Vector2 LeftUpPos = new Vector2(-8.9f, 5.0f);
+        Vector2 LeftDownPos = new Vector2(-8.9f, -5.0f);
+        Vector2 RightUpPos = new Vector2(8.9f, 5.0f);
+        Vector2 RightDownPos = new Vector2(8.9f, -5.0f);
+        Vector2 elementsRightUpPos = new Vector2(-1.5f, -3.7f);
+        Vector2 exportRightDownPos = new Vector2(-6.1f, 4.1f);
+        if (playButton != null) exportRightDownPos.x = -7.0f;
+        Vector2 editLeftUpPos = new Vector2(6.1f, -4.1f);
+        Vector2 PlayLeftDownPos = new Vector2(8.0f, 4.1f);
+        Vector2 StatsLeftDownPos = new Vector2(8.4f, 3.1f);
+
+        bool ans = InRect(LeftUpPos, exportRightDownPos, mousePos) ||
+                   InRect(LeftDownPos, elementsRightUpPos, mousePos) ||
+                   InRect(RightDownPos, editLeftUpPos, mousePos);
+        if (playButton != null)
+            ans = ans || InRect(RightUpPos, PlayLeftDownPos, mousePos) ||
+                  InRect(RightUpPos, StatsLeftDownPos, mousePos);
+
+        return ans;
+    }
+
+    private bool InRect(Vector2 firstPos, Vector2 secondPos, Vector2 checkPos)
+    {
+        float x1 = firstPos.x < secondPos.x ? firstPos.x : secondPos.x;
+        float x2 = firstPos.x > secondPos.x ? firstPos.x : secondPos.x;
+        float y1 = firstPos.y < secondPos.y ? firstPos.y : secondPos.y;
+        float y2 = firstPos.y > secondPos.y ? firstPos.y : secondPos.y;
+
+        return (checkPos.x > x1 && checkPos.x < x2 && checkPos.y > y1 && checkPos.y < y2);
     }
 
     private void AddElementToScheme(ElementBase element)
