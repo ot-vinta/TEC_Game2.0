@@ -78,7 +78,7 @@ namespace Assets.Scripts
 
         public static void Clear()
         {
-            chainElements = new ElementBase[Map.MapSizeY, Map.MapSizeX, 10000];
+            chainElements = new ElementBase[Map.MapSizeY + 1, Map.MapSizeX + 1, 10000];
             elements.Clear();
             wiresCount = 0;
         }
