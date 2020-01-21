@@ -10,27 +10,26 @@ namespace Assets.Scripts
 {
     static class Scheme
     {
-        private static ElementBase[,,] chainElements = new ElementBase[Map.MapSizeX, Map.MapSizeY, 1000];
-        private static List<ElementBase> elements = new List<ElementBase>();
+        private static ElementBase[,,] chainElements = new ElementBase[Map.MapSizeX + 1, Map.MapSizeY + 1, 10000];
+        private static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
         private static int wiresCount = 0;
 
         public static void AddElement(ElementBase element)
         {
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = element;
-            elements.Add(element);
+            elements.Add(elements.Count + 1, element);
             element.SetId(elements.Count);
             if (element is Wire) wiresCount++;
-            if (wiresCount > 1000) wiresCount = 0;
         }
 
         public static void RemoveElement(ElementBase element)
         {
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = null;
-            elements.Remove(element);
+            elements.Remove(element.GetId());
         }
         public static void RemoveElement(Vector3Int pos)
         {
-            elements.Remove(chainElements[pos.x, pos.y, pos.z]);
+            elements.Remove(chainElements[pos.x, pos.y, pos.z].GetId());
             chainElements[pos.x, pos.y, pos.z] = null;
         }
 
@@ -40,11 +39,6 @@ namespace Assets.Scripts
                 return chainElements[position.x, position.y, position.z];
             else
                 return null;
-        }
-
-        public static ElementBase GetElement(int id)
-        {
-            return elements[id - 1];
         }
 
         public static int GetRotation(Vector3Int pos)
@@ -59,6 +53,19 @@ namespace Assets.Scripts
             elem.angle = angle;
         }
 
+        public static List<Wire> GetWiresList()
+        {
+            List<Wire> ans = new List<Wire>();
+
+            foreach (var element in elements)
+            {
+                if (element.Value is Wire)
+                    ans.Add((Wire) element.Value);
+            }
+
+            return ans;
+        }
+
         public static int GetWiresCount()
         {
             return wiresCount;
@@ -71,7 +78,8 @@ namespace Assets.Scripts
 
         public static void Clear()
         {
-            chainElements = new ElementBase[Map.MapSizeY, Map.MapSizeX, 1000];
+            chainElements = new ElementBase[Map.MapSizeY, Map.MapSizeX, 10000];
+            elements.Clear();
             wiresCount = 0;
         }
     }

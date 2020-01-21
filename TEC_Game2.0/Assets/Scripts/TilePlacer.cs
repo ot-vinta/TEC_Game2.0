@@ -184,6 +184,7 @@ public class TilePlacer : MonoBehaviour
 
     private void PlaceWire()
     {
+        bool horsizontal = true;
         if (wireEndsCount == 0)
         {
             Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -196,7 +197,7 @@ public class TilePlacer : MonoBehaviour
                 Vector2 delta = new Vector2(0.25f, 0.25f);
                 position = map.CellToWorld(map.WorldToCell(position));
 
-                wireFirstPosition = new Vector3(position.x + delta.x, position.y + delta.x, Scheme.GetWiresCount() + 2);
+                wireFirstPosition = new Vector3(position.x, position.y, Scheme.GetWiresCount() + 2);
                 wireEndsCount = 1;
 
                 string path = "Sprites/HalfWireSprite";
@@ -218,17 +219,19 @@ public class TilePlacer : MonoBehaviour
             Vector2 delta = new Vector2(0.25f, 0.25f);
             position = map.CellToWorld(map.WorldToCell(position));
 
-            Vector3 wireSecondPosition = new Vector3(position.x + delta.x, position.y + delta.x, Scheme.GetWiresCount() + 2);
+            Vector3 wireSecondPosition = new Vector3(position.x, position.y, Scheme.GetWiresCount() + 2);
             if (Math.Abs(wireSecondPosition.x - wireFirstPosition.x) >
                 Math.Abs(wireSecondPosition.y - wireFirstPosition.y))
             {
                 angle = wireSecondPosition.x - wireFirstPosition.x > 0 ? 0.0f : 180.0f;
+                horsizontal = true;
                 scale = Math.Abs(wireSecondPosition.x - wireFirstPosition.x);
                 RotateAndScaleWire(angle, scale);
             }
             else
             {
                 angle = wireSecondPosition.y - wireFirstPosition.y > 0 ? 90.0f : 270.0f;
+                horsizontal = false;
                 scale = Math.Abs(wireSecondPosition.y - wireFirstPosition.y);
                 RotateAndScaleWire(angle, scale);
             }
@@ -243,6 +246,12 @@ public class TilePlacer : MonoBehaviour
                 pos1 = new Vector3Int(pos1.x, pos1.y, Scheme.GetWiresCount() + 2);
                 Vector3Int pos2 = map.WorldToCell(wireSecondPosition);
                 pos2 = new Vector3Int(pos2.x, pos2.y, Scheme.GetWiresCount() + 2);
+
+                if (horsizontal)
+                    pos2.y = pos1.y;
+                else
+                    pos2.x = pos1.x;
+
                 AddElementToScheme(new Wire(pos1, pos2));
 
                 Init("Wire", 0);
@@ -289,16 +298,17 @@ public class TilePlacer : MonoBehaviour
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         GameObject  playButton = GameObject.Find("PlayButton");
-        Vector2 LeftUpPos = new Vector2(-8.9f, 5.0f);
-        Vector2 LeftDownPos = new Vector2(-8.9f, -5.0f);
-        Vector2 RightUpPos = new Vector2(8.9f, 5.0f);
-        Vector2 RightDownPos = new Vector2(8.9f, -5.0f);
-        Vector2 elementsRightUpPos = new Vector2(-1.5f, -3.7f);
-        Vector2 exportRightDownPos = new Vector2(-6.1f, 4.1f);
-        if (playButton != null) exportRightDownPos.x = -7.0f;
-        Vector2 editLeftUpPos = new Vector2(6.1f, -4.1f);
-        Vector2 PlayLeftDownPos = new Vector2(8.0f, 4.1f);
-        Vector2 StatsLeftDownPos = new Vector2(8.4f, 3.1f);
+        Vector3 cameraPos = Camera.main.transform.position;
+        Vector2 LeftUpPos = new Vector2(-8.9f + cameraPos.x, 5.0f + cameraPos.y);
+        Vector2 LeftDownPos = new Vector2(-8.9f + cameraPos.x, -5.0f + cameraPos.y);
+        Vector2 RightUpPos = new Vector2(8.9f + cameraPos.x, 5.0f + cameraPos.y);
+        Vector2 RightDownPos = new Vector2(8.9f + cameraPos.x, -5.0f + cameraPos.y);
+        Vector2 elementsRightUpPos = new Vector2(-1.5f + cameraPos.x, -3.7f + cameraPos.y);
+        Vector2 exportRightDownPos = new Vector2(-6.1f + cameraPos.x, 4.1f + cameraPos.y);
+        if (playButton != null) exportRightDownPos.x = -7.0f + cameraPos.x;
+        Vector2 editLeftUpPos = new Vector2(6.1f + cameraPos.x, -4.1f + cameraPos.y);
+        Vector2 PlayLeftDownPos = new Vector2(8.0f + cameraPos.x, 4.1f + cameraPos.y);
+        Vector2 StatsLeftDownPos = new Vector2(8.4f + cameraPos.x, 3.1f + cameraPos.y);
 
         bool ans = InRect(LeftUpPos, exportRightDownPos, mousePos) ||
                    InRect(LeftDownPos, elementsRightUpPos, mousePos) ||

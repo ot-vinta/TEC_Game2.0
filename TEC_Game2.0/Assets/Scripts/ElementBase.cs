@@ -22,5 +22,10 @@ namespace Assets.Scripts
         {
             this.id = id;
         }
+
+        public int GetId()
+        {
+            return id;
+        }
     }
 }

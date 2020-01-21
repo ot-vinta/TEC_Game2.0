@@ -135,29 +135,27 @@ public class TileEditor : MonoBehaviour
     private Tile FindWire(ref Vector3Int selectedPos)
     {
         Vector3Int pos = selectedPos;
-        for (int i = 1; i <= Scheme.GetElementsCount(); i++)
+
+        List<Wire> wires = Scheme.GetWiresList();
+        foreach (var wire in wires)
         {
-            Wire wire = null;
-            if (Scheme.GetElement(i) is Wire)
-                wire = (Wire) Scheme.GetElement(i);
-            else continue;
-
-            Debug.Log(wire.pivotPosition);
-
             if ((wire.pivotPosition.x == pos.x && wire.secondPosition.x == pos.x &&
                  wire.pivotPosition.y <= pos.y && wire.secondPosition.y >= pos.y) ||
                 (wire.pivotPosition.y == pos.y && wire.secondPosition.y == pos.y &&
-                 wire.pivotPosition.x <= pos.x && wire.secondPosition.x >= pos.x) || 
+                 wire.pivotPosition.x <= pos.x && wire.secondPosition.x >= pos.x) ||
                 (wire.pivotPosition.x == pos.x && wire.secondPosition.x == pos.x &&
                  wire.pivotPosition.y >= pos.y && wire.secondPosition.y <= pos.y) ||
                 (wire.pivotPosition.y == pos.y && wire.secondPosition.y == pos.y &&
                  wire.pivotPosition.x >= pos.x && wire.secondPosition.x <= pos.x))
             {
                 selectedPos = wire.pivotPosition;
+                Debug.Log(pos);
                 return map.GetTile<Tile>(wire.pivotPosition);
             }
-        }
 
+            Debug.Log(wire.pivotPosition + "|||" + wire.GetId());
+            Debug.Log(wire.secondPosition + "---" + wire.GetId());
+        }
         return null;
     }
 
