@@ -33,6 +33,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
+        GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
         map.GetComponent<TilePlacer>().Init("Conductor", 0);
     }
 
@@ -41,6 +42,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
+        GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
         map.GetComponent<TilePlacer>().Init("Resistor", 0);
     }
 
@@ -49,6 +51,7 @@ public class NewLevelControls : MonoBehaviour
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
+        GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
         map.GetComponent<TilePlacer>().Init("Wire", 0);
     }
 
