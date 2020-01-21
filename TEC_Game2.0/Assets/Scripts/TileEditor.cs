@@ -142,6 +142,8 @@ public class TileEditor : MonoBehaviour
                 wire = (Wire) Scheme.GetElement(i);
             else continue;
 
+            Debug.Log(wire.pivotPosition);
+
             if ((wire.pivotPosition.x == pos.x && wire.secondPosition.x == pos.x &&
                  wire.pivotPosition.y <= pos.y && wire.secondPosition.y >= pos.y) ||
                 (wire.pivotPosition.y == pos.y && wire.secondPosition.y == pos.y &&

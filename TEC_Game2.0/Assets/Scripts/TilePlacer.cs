@@ -40,8 +40,8 @@ public class TilePlacer : MonoBehaviour
         {
             Destroy(empty);
             mapObject.GetComponent<TileEditor>().PressEscape();
-            mapObject.GetComponent<TilePlacer>().enabled = false;
             GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+            mapObject.GetComponent<TilePlacer>().enabled = false;
         }
 
         if (!wirePlacing)
@@ -167,8 +167,8 @@ public class TilePlacer : MonoBehaviour
         else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
         {
             Destroy(empty);
-            mapObject.GetComponent<TilePlacer>().enabled = false;
             GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+            mapObject.GetComponent<TilePlacer>().enabled = false;
         }
     }
 
@@ -205,6 +205,7 @@ public class TilePlacer : MonoBehaviour
             else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
             {
                 Destroy(empty);
+                GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
                 mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
@@ -249,8 +250,8 @@ public class TilePlacer : MonoBehaviour
             else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
             {
                 Destroy(empty);
-                mapObject.GetComponent<TilePlacer>().enabled = false;
                 GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
     }
