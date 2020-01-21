@@ -13,12 +13,14 @@ namespace Assets.Scripts
         private static ElementBase[,,] chainElements = new ElementBase[Map.MapSizeX + 1, Map.MapSizeY + 1, 10000];
         private static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
         private static int wiresCount = 0;
+        private static int nextId = 1;
 
         public static void AddElement(ElementBase element)
         {
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = element;
-            elements.Add(elements.Count + 1, element);
-            element.SetId(elements.Count);
+            elements.Add(nextId, element);
+            element.SetId(nextId);
+            nextId++;
             if (element is Wire) wiresCount++;
         }
 
