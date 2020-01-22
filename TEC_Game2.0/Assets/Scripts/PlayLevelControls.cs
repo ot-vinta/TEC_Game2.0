@@ -27,7 +27,7 @@ public class PlayLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
-        map.GetComponent<TilePlacer>().Init("Nullator", 0);
+        map.GetComponent<TilePlacer>().Init("Nullator", 0, true);
     }
 
     public void NoratorPressed()
@@ -36,7 +36,7 @@ public class PlayLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
-        map.GetComponent<TilePlacer>().Init("Norator", 0);
+        map.GetComponent<TilePlacer>().Init("Norator", 0, true);
     }
 
     public void WirePressed()
@@ -45,7 +45,7 @@ public class PlayLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetDefault();
         map.GetComponent<TilePlacer>().enabled = true;
         GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
-        map.GetComponent<TilePlacer>().Init("Wire", 0);
+        map.GetComponent<TilePlacer>().Init("Wire", 0, true);
     }
 
     public void DeletePressed()

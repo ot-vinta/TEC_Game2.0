@@ -27,11 +27,11 @@ public class TilePlacer : MonoBehaviour
     private bool leftMousePressed;
     private bool horizontalPlaced;
     private float angle;
+    private bool isInfinite;
 
     private bool wirePlacing;
     private int wireEndsCount;
     private Vector3 wireFirstPosition;
-
 
     // Update is called once per frame
     void Update()
@@ -39,7 +39,7 @@ public class TilePlacer : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             Destroy(empty);
-            mapObject.GetComponent<TileEditor>().PressEscape();
+            mapObject.GetComponent<TileEditor>().BackupElement();
             GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
             mapObject.GetComponent<TilePlacer>().enabled = false;
         }
@@ -53,8 +53,9 @@ public class TilePlacer : MonoBehaviour
             PlaceWire();
     }
 
-    public void Init(string type, int startAngle)
+    public void Init(string type, int startAngle, bool isInfinite)
     {
+        this.isInfinite = isInfinite;
         mapObject = GameObject.Find("Map");
         map = mapObject.GetComponent<Tilemap>();
         elementTile = null;
@@ -159,10 +160,16 @@ public class TilePlacer : MonoBehaviour
             //Add classes for chain elements
             //Change to specific element class(TO DO)
             Vector3Int pos = map.WorldToCell(sr.transform.position);
-            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1)));
+            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
             //------------------------------------------------------
 
-            Init(elementTile.name, 0);
+            if (isInfinite)
+                Init(elementTile.name, 0, true);
+            else
+            {
+                GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                mapObject.GetComponent<TilePlacer>().enabled = false;
+            }
         }
         else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
         {
@@ -254,7 +261,13 @@ public class TilePlacer : MonoBehaviour
 
                 AddElementToScheme(new Wire(pos1, pos2));
 
-                Init("Wire", 0);
+                if (isInfinite)
+                    Init("Wire", 0, true);
+                else
+                {
+                    GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                    mapObject.GetComponent<TilePlacer>().enabled = false;
+                }
             }
             else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
             {
@@ -276,6 +289,12 @@ public class TilePlacer : MonoBehaviour
         map.SetTile(new Vector3Int((int) position.x, (int) position.y, zPosition), elementTile);
 
         leftMousePressed = true;
+
+        if (!isInfinite)
+        {
+            mapObject.GetComponent<TileEditor>().SetMove();
+            mapObject.GetComponent<TileEditor>().DeleteBackup();
+        }
     }
 
     private void RotateAndScaleWire(float angle, float scale)

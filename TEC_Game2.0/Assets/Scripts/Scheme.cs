@@ -17,6 +17,8 @@ namespace Assets.Scripts
 
         public static void AddElement(ElementBase element)
         {
+            Debug.Log(element.pivotPosition);
+            Debug.Log(element);
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = element;
             elements.Add(nextId, element);
             element.SetId(nextId);

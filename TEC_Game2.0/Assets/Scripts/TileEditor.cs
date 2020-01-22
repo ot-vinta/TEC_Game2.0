@@ -12,7 +12,6 @@ public class TileEditor : MonoBehaviour
     private Tile prevTile, selectedTile;
     private Vector3Int prevPos;
     private string editStatus;
-    private bool escapePressed;
     private ElementBase backupElement;
     private Vector3Int backupPos;
     private Tile backupTile;
@@ -28,7 +27,6 @@ public class TileEditor : MonoBehaviour
         map = mapObject.GetComponent<Tilemap>();
         editStatus = StatusDefault;
         selectedTile = null;
-        escapePressed = false;
     }
 
     void Update()
@@ -46,6 +44,11 @@ public class TileEditor : MonoBehaviour
             }
             else if (selectedTile == null)
                 UnmarkTile(prevTile, prevPos);
+
+            if (selectedTile != null && Scheme.GetElement(mousePos) is Wire && (editStatus == StatusMove || editStatus == StatusRotate))
+            {
+                UnmarkTile(selectedTile, mousePos);
+            }
 
             prevPos = mousePos;
         }
@@ -69,23 +72,20 @@ public class TileEditor : MonoBehaviour
                     DeleteElement(mousePos);
                     break;
                 case StatusRotate:
-                    if (selectedTile.name != "Wire")
+                    if (!(Scheme.GetElement(mousePos) is Wire))
+                    {
+                        Debug.Log(Scheme.GetElement(mousePos));
                         RotateElement(mousePos, selectedTile);
+                    }
+
                     break;
                 case StatusMove:
-                    if (selectedTile.name != "Wire")
+                    if (!(Scheme.GetElement(mousePos) is Wire))
                         MoveElement(mousePos, selectedTile);
                     break;
             }
 
             selectedTile = null;
-        }
-
-        if (escapePressed && editStatus == StatusMove)
-        {
-            Scheme.AddElement(backupElement);
-            map.SetTile(backupPos, backupTile);
-            escapePressed = false;
         }
     }
 
@@ -150,11 +150,9 @@ public class TileEditor : MonoBehaviour
             {
                 selectedPos = wire.pivotPosition;
                 Debug.Log(pos);
+                Debug.Log(wire.pivotPosition);
                 return map.GetTile<Tile>(wire.pivotPosition);
             }
-
-            Debug.Log(wire.pivotPosition + "|||" + wire.GetId());
-            Debug.Log(wire.secondPosition + "---" + wire.GetId());
         }
         return null;
     }
@@ -194,10 +192,10 @@ public class TileEditor : MonoBehaviour
 
     private void MoveElement(Vector3Int pos, Tile tile)
     {
-        if (mapObject.GetComponent<TileEditor>().GetStatus() != StatusDefault)
-            mapObject.GetComponent<TileEditor>().SetDefault();
+        if (GetStatus() != StatusDefault)
+            SetDefault();
         mapObject.GetComponent<TilePlacer>().enabled = true;
-        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos));
+        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false);
 
         backupElement = Scheme.GetElement(pos);
         backupPos = pos;
@@ -206,9 +204,19 @@ public class TileEditor : MonoBehaviour
         DeleteElement(pos);
     }
 
-    public void PressEscape()
+    public void BackupElement()
     {
-        escapePressed = true;
+        if (backupElement != null)
+        {
+            Scheme.AddElement(backupElement);
+            map.SetTile(backupPos, backupTile);
+            SetMove();
+        }
+    }
+
+    public void DeleteBackup()
+    {
+        backupElement = null;
     }
 
     public void SetDelete()
