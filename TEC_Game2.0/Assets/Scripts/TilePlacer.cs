@@ -2,8 +2,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Numerics;
+using System.Security.Cryptography;
+using System.Text;
+using System.Threading.Tasks;
+using Assets.Scripts;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Tilemaps;
 using Quaternion = UnityEngine.Quaternion;
 using Vector2 = UnityEngine.Vector2;
@@ -22,16 +27,23 @@ public class TilePlacer : MonoBehaviour
     private bool leftMousePressed;
     private bool horizontalPlaced;
     private float angle;
+    private bool isInfinite;
 
     private bool wirePlacing;
     private int wireEndsCount;
     private Vector3 wireFirstPosition;
-    private int wireZPosition = 1;
-
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Destroy(empty);
+            mapObject.GetComponent<TileEditor>().BackupElement();
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+            mapObject.GetComponent<TilePlacer>().enabled = false;
+        }
+
         if (!wirePlacing)
         {
             MoveSprite();
@@ -41,15 +53,16 @@ public class TilePlacer : MonoBehaviour
             PlaceWire();
     }
 
-    public void Init(string type)
+    public void Init(string type, int startAngle, bool isInfinite)
     {
+        this.isInfinite = isInfinite;
         mapObject = GameObject.Find("Map");
         map = mapObject.GetComponent<Tilemap>();
         elementTile = null;
         horizontalPlaced = true;
         leftMousePressed = false;
         wirePlacing = false;
-        angle = 0.0f;
+        angle = startAngle;
 
         empty = new GameObject();
         empty.transform.localScale = new Vector3(0.5f, 0.5f, 1.0f);
@@ -86,6 +99,9 @@ public class TilePlacer : MonoBehaviour
                 InitWire(path, new Vector2(0.5f, 0.5f), 1.0f);
                 break;
         }
+
+        elementTile.name = type;
+        sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
     }
 
     private void InitTile(string path)
@@ -135,10 +151,30 @@ public class TilePlacer : MonoBehaviour
             MoveToNearestCell(position);
         }
         
-        if (Input.GetMouseButtonDown(0) && !leftMousePressed)
+        if (Input.GetMouseButtonDown(0) && !leftMousePressed && !PressedUnderButton())
         {
             PlaceTile(Vector3.one, 1);
             Destroy(empty);
+
+            //------------------------------------------------------
+            //Add classes for chain elements
+            //Change to specific element class(TO DO)
+            Vector3Int pos = map.WorldToCell(sr.transform.position);
+            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+            //------------------------------------------------------
+
+            if (isInfinite)
+                Init(elementTile.name, 0, true);
+            else
+            {
+                GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                mapObject.GetComponent<TilePlacer>().enabled = false;
+            }
+        }
+        else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+        {
+            Destroy(empty);
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
             mapObject.GetComponent<TilePlacer>().enabled = false;
         }
     }
@@ -155,6 +191,7 @@ public class TilePlacer : MonoBehaviour
 
     private void PlaceWire()
     {
+        bool horsizontal = true;
         if (wireEndsCount == 0)
         {
             Vector3 newPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
@@ -162,17 +199,22 @@ public class TilePlacer : MonoBehaviour
 
             MoveToNearestCell(position);
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !PressedUnderButton())
             {
                 Vector2 delta = new Vector2(0.25f, 0.25f);
                 position = map.CellToWorld(map.WorldToCell(position));
 
-                wireFirstPosition = new Vector3(position.x + delta.x, position.y + delta.x, 1);
-                Debug.Log(wireFirstPosition);
+                wireFirstPosition = new Vector3(position.x, position.y, Scheme.GetWiresCount() + 2);
                 wireEndsCount = 1;
 
                 string path = "Sprites/HalfWireSprite";
                 InitWire(path, new Vector2(0.0f, 0.5f), 0.6f);
+            }
+            else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+            {
+                Destroy(empty);
+                GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
         else if (wireEndsCount == 1)
@@ -184,28 +226,53 @@ public class TilePlacer : MonoBehaviour
             Vector2 delta = new Vector2(0.25f, 0.25f);
             position = map.CellToWorld(map.WorldToCell(position));
 
-            Vector3 wireSecondPosition = new Vector3(position.x + delta.x, position.y + delta.x, 1);
-            Debug.Log(wireSecondPosition);
+            Vector3 wireSecondPosition = new Vector3(position.x, position.y, Scheme.GetWiresCount() + 2);
             if (Math.Abs(wireSecondPosition.x - wireFirstPosition.x) >
                 Math.Abs(wireSecondPosition.y - wireFirstPosition.y))
             {
                 angle = wireSecondPosition.x - wireFirstPosition.x > 0 ? 0.0f : 180.0f;
+                horsizontal = true;
                 scale = Math.Abs(wireSecondPosition.x - wireFirstPosition.x);
                 RotateAndScaleWire(angle, scale);
             }
             else
             {
                 angle = wireSecondPosition.y - wireFirstPosition.y > 0 ? 90.0f : 270.0f;
+                horsizontal = false;
                 scale = Math.Abs(wireSecondPosition.y - wireFirstPosition.y);
                 RotateAndScaleWire(angle, scale);
             }
 
-            if (Input.GetMouseButtonDown(0))
+            if (Input.GetMouseButtonDown(0) && !PressedUnderButton())
             {
                 wireEndsCount = 2;
-                PlaceTile(new Vector3(scale, 1, 1), wireZPosition);
-                wireZPosition++;
+                PlaceTile(new Vector3(scale, 1, 1), Scheme.GetWiresCount() + 2);
                 Destroy(empty);
+
+                Vector3Int pos1 = map.WorldToCell(wireFirstPosition);
+                pos1 = new Vector3Int(pos1.x, pos1.y, Scheme.GetWiresCount() + 2);
+                Vector3Int pos2 = map.WorldToCell(wireSecondPosition);
+                pos2 = new Vector3Int(pos2.x, pos2.y, Scheme.GetWiresCount() + 2);
+
+                if (horsizontal)
+                    pos2.y = pos1.y;
+                else
+                    pos2.x = pos1.x;
+
+                AddElementToScheme(new Wire(pos1, pos2));
+
+                if (isInfinite)
+                    Init("Wire", 0, true);
+                else
+                {
+                    GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+                    mapObject.GetComponent<TilePlacer>().enabled = false;
+                }
+            }
+            else if (Input.GetMouseButtonDown(0) && PressedUnderButton())
+            {
+                Destroy(empty);
+                GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
                 mapObject.GetComponent<TilePlacer>().enabled = false;
             }
         }
@@ -217,18 +284,22 @@ public class TilePlacer : MonoBehaviour
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
         var m = elementTile.transform;
 
-        //Here we can add element to list later
         m.SetTRS(Vector3.zero, rotation, scale);
         elementTile.transform = m;
         map.SetTile(new Vector3Int((int) position.x, (int) position.y, zPosition), elementTile);
 
         leftMousePressed = true;
+
+        if (!isInfinite)
+        {
+            mapObject.GetComponent<TileEditor>().SetMove();
+            mapObject.GetComponent<TileEditor>().DeleteBackup();
+        }
     }
 
     private void RotateAndScaleWire(float angle, float scale)
     {
         angle -= sr.transform.eulerAngles.z;
-        Debug.Log(sr.transform.rotation.z);
         sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
         scale /= 2;
         empty.transform.localScale = new Vector3(scale, 0.5f, 1.0f);
@@ -242,8 +313,51 @@ public class TilePlacer : MonoBehaviour
         sr.transform.position = new Vector3(position.x + delta.x, position.y + delta.x, 0);
     }
 
-    public void SetLeftMousePressed()
+    private bool PressedUnderButton()
     {
-        leftMousePressed = true;
+        Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        GameObject  playButton = GameObject.Find("PlayButton");
+        Vector3 cameraPos = Camera.main.transform.position;
+        Vector2 LeftUpPos = new Vector2(-8.9f + cameraPos.x, 5.0f + cameraPos.y);
+        Vector2 LeftDownPos = new Vector2(-8.9f + cameraPos.x, -5.0f + cameraPos.y);
+        Vector2 RightUpPos = new Vector2(8.9f + cameraPos.x, 5.0f + cameraPos.y);
+        Vector2 RightDownPos = new Vector2(8.9f + cameraPos.x, -5.0f + cameraPos.y);
+        Vector2 elementsRightUpPos = new Vector2(-1.5f + cameraPos.x, -3.7f + cameraPos.y);
+        Vector2 exportRightDownPos = new Vector2(-6.1f + cameraPos.x, 4.1f + cameraPos.y);
+        if (playButton != null) exportRightDownPos.x = -7.0f + cameraPos.x;
+        Vector2 editLeftUpPos = new Vector2(6.1f + cameraPos.x, -4.1f + cameraPos.y);
+        Vector2 PlayLeftDownPos = new Vector2(8.0f + cameraPos.x, 4.1f + cameraPos.y);
+        Vector2 StatsLeftDownPos = new Vector2(8.4f + cameraPos.x, 3.1f + cameraPos.y);
+
+        bool ans = InRect(LeftUpPos, exportRightDownPos, mousePos) ||
+                   InRect(LeftDownPos, elementsRightUpPos, mousePos) ||
+                   InRect(RightDownPos, editLeftUpPos, mousePos);
+        if (playButton != null)
+            ans = ans || InRect(RightUpPos, PlayLeftDownPos, mousePos) ||
+                  InRect(RightUpPos, StatsLeftDownPos, mousePos);
+
+        return ans;
+    }
+
+    private bool InRect(Vector2 firstPos, Vector2 secondPos, Vector2 checkPos)
+    {
+        float x1 = firstPos.x < secondPos.x ? firstPos.x : secondPos.x;
+        float x2 = firstPos.x > secondPos.x ? firstPos.x : secondPos.x;
+        float y1 = firstPos.y < secondPos.y ? firstPos.y : secondPos.y;
+        float y2 = firstPos.y > secondPos.y ? firstPos.y : secondPos.y;
+
+        return (checkPos.x > x1 && checkPos.x < x2 && checkPos.y > y1 && checkPos.y < y2);
+    }
+
+    private void AddElementToScheme(ElementBase element)
+    {
+        Scheme.AddElement(element);
+    }
+
+    public void SetAngle(int angle)
+    {
+        this.angle = angle;
+        if (sr != null)
+            sr.transform.Rotate(0.0f, 0.0f, angle, Space.World);
     }
 }
