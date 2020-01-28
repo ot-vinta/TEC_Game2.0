@@ -54,7 +54,11 @@ public class PlayLevelControls : MonoBehaviour
 
     public void PlayPressed()
     {
-        //TO DO
+        UI_InputBox dial = Resources.FindObjectsOfTypeAll<UI_InputBox>()[0]; //Понимаю, выглядит устрашающе, но это единственный способ (из того, что я нашёл), 
+                                                                             //позволяющий получить неактивный объект нужного класса
+        dial.ShowDialogue("Проверка вызова из PlayLevelControls");
+        string r = dial.GetReply(); //Если попытаться получить ответ сразу после вывода диалога, получишь null (Или то, что пользователь вводил в прошлый раз)
+        //Всё будет хорошо, если пользователь сам нажмёт на какую-нибудь другую кнопку после ввода строки в диалог
     }
 
     public void RestartPressed()
