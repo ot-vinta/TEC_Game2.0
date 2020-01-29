@@ -8,10 +8,12 @@ public class PlayLevelControls : MonoBehaviour
 {
 
     UIInputBox dialog;
+    UIList dialogList;
 
     private void Start()
     {
         dialog = new UIInputBox();
+        dialogList = new UIList();
     }
 
     public void BackPressed()
@@ -72,7 +74,24 @@ public class PlayLevelControls : MonoBehaviour
 
     public void RestartPressed()
     {
-        //TO DO
+        string[] elements = new string[15];
+        elements[0] = "Проводимость: 4";
+        elements[1] = "Сопротивление: 2";
+        elements[2] = "Провод: 3";
+        elements[3] = "Если";
+        elements[4] = "Строк";
+        
+        elements[5] = "Слишком";
+        elements[6] = "Много";
+        elements[7] = "То";
+        elements[8] = "Должен";
+        elements[9] = "Появиться";
+        elements[10] = "Скролл";
+        elements[11] = "Бар";
+        elements[12] = "Вот";
+        elements[13] = "Как";
+        elements[14] = "Сейчас";
+        dialogList.ShowDialog(elements);
     }
 
     public void StatisticsPressed()
