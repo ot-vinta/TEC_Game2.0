@@ -7,10 +7,15 @@ using UnityEngine.Tilemaps;
 public class PlayLevelControls : MonoBehaviour
 {
     private GameObject map;
+    UIInputBox dialog;
+    UIList dialogList;
     void Start()
     {
         map = GameObject.Find("Map");
+        dialog = new UIInputBox();
+        dialogList = new UIList();
     }
+
     public void BackPressed()
     {
         SceneManager.LoadScene("MainMenuScene", LoadSceneMode.Single);
@@ -72,14 +77,36 @@ public class PlayLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetMove();
     }
 
-    public void PlayPressed()
+    public void PlayPressed() //Надо будет передвинуть
     {
-        //TO DO
+        dialog.SetOnClickListener(message =>
+        {
+            dialog.title.text = message;
+            return true;
+        });
+        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
     }
 
-    public void RestartPressed()
+    public void RestartPressed() //Надо будет передвинуть
     {
-        //TO DO
+        string[] elements = new string[15];
+        elements[0] = "Проводимость: 4";
+        elements[1] = "Сопротивление: 2";
+        elements[2] = "Провод: 3";
+        elements[3] = "Если";
+        elements[4] = "Строк";
+        
+        elements[5] = "Слишком";
+        elements[6] = "Много";
+        elements[7] = "То";
+        elements[8] = "Должен";
+        elements[9] = "Появиться";
+        elements[10] = "Скролл";
+        elements[11] = "Бар";
+        elements[12] = "Вот";
+        elements[13] = "Как";
+        elements[14] = "Сейчас";
+        dialogList.ShowDialog(elements);
     }
 
     public void StatisticsPressed()
