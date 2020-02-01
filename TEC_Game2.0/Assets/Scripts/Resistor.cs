@@ -7,15 +7,16 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class ChainElement : ElementBase
+    class Resistor : ChainElement
     {
-        public ChainElement(Vector3Int position, int angle) : base(position, angle)
+        
+        public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
         }
 
         public override string ToString()
         {
-            return "ChainElement";
+            return "Resistor";
         }
     }
 }

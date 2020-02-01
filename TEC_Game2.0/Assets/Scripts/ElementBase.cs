@@ -10,11 +10,13 @@ namespace Assets.Scripts
     public abstract class ElementBase
     {
         public Vector3Int pivotPosition;
-        private int id;
+        public int id;
+        public int angle;
 
-        protected ElementBase(Vector3Int position)
+        protected ElementBase(Vector3Int position, int angle)
         {
             this.pivotPosition = new Vector3Int(position.x, position.y, position.z);
+            this.angle = angle;
             id = 0;
         }
 
@@ -26,6 +28,11 @@ namespace Assets.Scripts
         public int GetId()
         {
             return id;
+        }
+
+        public override string ToString()
+        {
+            return "ElementBase";
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -18,7 +19,8 @@ public class PlayLevelControls : MonoBehaviour
 
     public void ImportPressed()
     {
-        //TO DO
+        string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
+        JsonReader.ConvertToObject(DefaultPath);
     }
 
     public void NullatorPressed()

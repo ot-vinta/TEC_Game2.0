@@ -7,15 +7,15 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class ChainElement : ElementBase
+    class Nullator : ChainElement
     {
-        public ChainElement(Vector3Int position, int angle) : base(position, angle)
+        public Nullator(Vector3Int position, int angle) : base(position, angle)
         {
         }
 
         public override string ToString()
         {
-            return "ChainElement";
+            return "Nullator";
         }
     }
 }

@@ -11,14 +11,12 @@ namespace Assets.Scripts
     static class Scheme
     {
         private static ElementBase[,,] chainElements = new ElementBase[Map.MapSizeX + 1, Map.MapSizeY + 1, 10000];
-        private static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
+        public static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
         private static int wiresCount = 0;
         private static int nextId = 1;
 
         public static void AddElement(ElementBase element)
         {
-            Debug.Log(element.pivotPosition);
-            Debug.Log(element);
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = element;
             elements.Add(nextId, element);
             element.SetId(nextId);

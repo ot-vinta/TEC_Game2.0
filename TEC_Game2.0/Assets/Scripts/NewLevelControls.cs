@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,12 +21,14 @@ public class NewLevelControls : MonoBehaviour
 
     public void SavePressed()
     {
-        //TO DO
+        string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
+        JsonWriter.ConvertToJson(Scheme.elements, Scheme.GetWiresList(), DefaultPath);
     }
 
     public void ImportPressed()
     {
-        //TO DO
+        string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
+        JsonReader.ConvertToObject(DefaultPath);
     }
 
     public void ConductorPressed()
