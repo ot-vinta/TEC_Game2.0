@@ -16,14 +16,14 @@ namespace Assets.Scripts
             StreamReader reader = new StreamReader(path);
             string json = reader.ReadToEnd();
 
-            string line = json.Substring(3, json.IndexOf('\n') - 6);
+            string line = json.Substring(16, json.IndexOf('\n') - 19);
 
             while (json != "")
             {
                 AddElementToScheme(line);
 
                 if (json.IndexOf('\n') == -1)
-                    json = json.Substring(json.IndexOf(']') + 1);
+                    json = json.Substring(json.IndexOf(']') + 2);
                 else
                     json = json.Substring(json.IndexOf('\n') + 1);
 
@@ -39,6 +39,7 @@ namespace Assets.Scripts
         {
             string type = line.Substring(0, line.IndexOf('\"'));
             line = line.Substring(line.IndexOf('\"') + 3);
+            Debug.Log(line);
 
             switch (type)
             {

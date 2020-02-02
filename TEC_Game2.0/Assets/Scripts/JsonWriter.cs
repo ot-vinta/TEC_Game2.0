@@ -13,7 +13,7 @@ namespace Assets.Scripts
 
         public static void ConvertToJson(Dictionary<int, ElementBase> elements, List<Wire> wires, string path)
         {
-            string json = "[";
+            string json = "{\"Elements\": [";
 
             List<ElementBase> elem = new List<ElementBase>(elements.Values);
 
@@ -22,7 +22,7 @@ namespace Assets.Scripts
                 if (i != elem.Count - 1)
                     json = json + "{\"" + elem[i] + "\": " + JsonUtility.ToJson(elem[i]) + "}, \n";
                 else
-                    json = json + "{\"" + elem[i] + "\": " + JsonUtility.ToJson(elem[i]) + "}]";
+                    json = json + "{\"" + elem[i] + "\": " + JsonUtility.ToJson(elem[i]) + "}]}";
             }
 
             File.WriteAllText(path, json);

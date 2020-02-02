@@ -1,8 +1,10 @@
-[{"Wire": {"pivotPosition":{"x":23,"y":21,"z":2},"id":1,"angle":90,"secondPosition":{"x":23,"y":27,"z":2}}}, 
-{"Resistor": {"pivotPosition":{"x":25,"y":27,"z":1},"id":2,"angle":0}}, 
-{"Resistor": {"pivotPosition":{"x":25,"y":21,"z":1},"id":3,"angle":0}}, 
-{"Wire": {"pivotPosition":{"x":27,"y":21,"z":3},"id":4,"angle":0,"secondPosition":{"x":31,"y":21,"z":3}}}, 
-{"Wire": {"pivotPosition":{"x":31,"y":21,"z":4},"id":5,"angle":90,"secondPosition":{"x":31,"y":22,"z":4}}}, 
-{"Conductor": {"pivotPosition":{"x":31,"y":24,"z":1},"id":6,"angle":90}}, 
-{"Wire": {"pivotPosition":{"x":27,"y":27,"z":5},"id":7,"angle":0,"secondPosition":{"x":31,"y":27,"z":5}}}, 
-{"Wire": {"pivotPosition":{"x":31,"y":27,"z":6},"id":8,"angle":270,"secondPosition":{"x":31,"y":26,"z":6}}}]
+{"Elements": [{"Resistor": {"pivotPosition":{"x":20,"y":25,"z":1},"id":1,"angle":0}}, 
+{"Resistor": {"pivotPosition":{"x":40,"y":26,"z":1},"id":2,"angle":0}}, 
+{"Wire": {"pivotPosition":{"x":22,"y":25,"z":2},"id":3,"angle":0,"secondPosition":{"x":38,"y":25,"z":2}}}, 
+{"Wire": {"pivotPosition":{"x":38,"y":25,"z":3},"id":4,"angle":90,"secondPosition":{"x":38,"y":26,"z":3}}}, 
+{"Wire": {"pivotPosition":{"x":42,"y":26,"z":4},"id":5,"angle":270,"secondPosition":{"x":42,"y":20,"z":4}}}, 
+{"Conductor": {"pivotPosition":{"x":31,"y":20,"z":1},"id":6,"angle":0}}, 
+{"Wire": {"pivotPosition":{"x":29,"y":20,"z":5},"id":7,"angle":90,"secondPosition":{"x":29,"y":25,"z":5}}}, 
+{"Wire": {"pivotPosition":{"x":33,"y":20,"z":6},"id":8,"angle":0,"secondPosition":{"x":42,"y":20,"z":6}}}, 
+{"Wire": {"pivotPosition":{"x":29,"y":20,"z":7},"id":9,"angle":180,"secondPosition":{"x":18,"y":20,"z":7}}}, 
+{"Wire": {"pivotPosition":{"x":18,"y":20,"z":8},"id":10,"angle":90,"secondPosition":{"x":18,"y":25,"z":8}}}]}
