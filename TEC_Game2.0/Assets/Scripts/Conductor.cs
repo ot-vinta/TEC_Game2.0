@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Conductor : ChainElement
+    class Conductor : LabeledChainElement
     {
         public Conductor(Vector3Int position, int angle) : base(position, angle)
         {

@@ -7,12 +7,11 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class ChainElement : ElementBase
+    class NullorElement : ChainElement
     {
-        public int angle;
-        public ChainElement(Vector3Int position, int angle) : base(position)
+        public NullorElement(Vector3Int position, int angle) : base(position, angle)
         {
-            this.angle = angle;
+
         }
     }
 }
