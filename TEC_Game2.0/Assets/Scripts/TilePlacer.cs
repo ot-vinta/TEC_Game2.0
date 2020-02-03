@@ -160,7 +160,7 @@ public class TilePlacer : MonoBehaviour
             //Add classes for chain elements
             //Change to specific element class(TO DO)
             Vector3Int pos = map.WorldToCell(sr.transform.position);
-            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+            AddElementToScheme(new LabeledChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
             //------------------------------------------------------
 
             if (isInfinite)

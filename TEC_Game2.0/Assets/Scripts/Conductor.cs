@@ -11,7 +11,7 @@ namespace Assets.Scripts
     {
         public Conductor(Vector3Int position, int angle) : base(position, angle)
         {
-            this.name = "Проводимость";
+            this.label.text = "Проводимость";
         }
         public Conductor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {

@@ -11,7 +11,7 @@ namespace Assets.Scripts
     {
         public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
-            this.name = "Сопротивление";
+            this.label.text = "Сопротивление";
         }
         public Resistor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {
