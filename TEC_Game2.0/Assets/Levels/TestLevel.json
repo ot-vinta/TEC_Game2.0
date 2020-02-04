@@ -7,4 +7,7 @@
 {"Wire": {"pivotPosition":{"x":29,"y":20,"z":5},"id":7,"angle":90,"secondPosition":{"x":29,"y":25,"z":5}}}, 
 {"Wire": {"pivotPosition":{"x":33,"y":20,"z":6},"id":8,"angle":0,"secondPosition":{"x":42,"y":20,"z":6}}}, 
 {"Wire": {"pivotPosition":{"x":29,"y":20,"z":7},"id":9,"angle":180,"secondPosition":{"x":18,"y":20,"z":7}}}, 
-{"Wire": {"pivotPosition":{"x":18,"y":20,"z":8},"id":10,"angle":90,"secondPosition":{"x":18,"y":25,"z":8}}}]}
+{"Wire": {"pivotPosition":{"x":18,"y":20,"z":8},"id":10,"angle":90,"secondPosition":{"x":18,"y":25,"z":8}}}, 
+{"Resistor": {"pivotPosition":{"x":29,"y":27,"z":1},"id":11,"angle":90}}, 
+{"Resistor": {"pivotPosition":{"x":31,"y":29,"z":1},"id":12,"angle":180}}, 
+{"Resistor": {"pivotPosition":{"x":33,"y":27,"z":1},"id":13,"angle":90}}]}

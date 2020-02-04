@@ -11,10 +11,16 @@ namespace Assets.Scripts
 {
     class JsonReader
     {
+        private static GameObject mapObject = GameObject.Find("Map");
+        private static Tilemap map = mapObject.GetComponent<Tilemap>();
+
         public static void ConvertToObject(string path)
         {
             StreamReader reader = new StreamReader(path);
             string json = reader.ReadToEnd();
+
+            ClearTilemap();
+            Scheme.Clear();
 
             string line = json.Substring(16, json.IndexOf('\n') - 19);
 
@@ -32,6 +38,8 @@ namespace Assets.Scripts
                 else if (json != "")
                     line = json.Substring(2, json.IndexOf('\n') - 5);
             }
+
+            reader.Close();
 
         }
 
@@ -63,8 +71,6 @@ namespace Assets.Scripts
 
         private static void PlaceElement(ElementBase element, string texturePath)
         {
-            GameObject mapObject = GameObject.Find("Map");
-            Tilemap map = mapObject.GetComponent<Tilemap>();
 
             Scheme.AddElement(element);
             Texture2D texture = Resources.Load<Texture2D>(texturePath);
@@ -113,6 +119,14 @@ namespace Assets.Scripts
             tile.transform = m;
 
             map.SetTile(element.pivotPosition, tile);
+        }
+
+        private static void ClearTilemap()
+        {
+            foreach (var element in Scheme.elements.Values)
+            {
+                map.SetTile(element.pivotPosition, null);
+            }
         }
     }
 }
