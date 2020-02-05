@@ -74,7 +74,6 @@ public class TileEditor : MonoBehaviour
                 case StatusRotate:
                     if (!(Scheme.GetElement(mousePos) is Wire))
                     {
-                        Debug.Log(Scheme.GetElement(mousePos));
                         RotateElement(mousePos, selectedTile);
                     }
 

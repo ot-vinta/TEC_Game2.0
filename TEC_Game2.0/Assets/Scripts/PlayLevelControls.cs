@@ -20,7 +20,8 @@ public class PlayLevelControls : MonoBehaviour
     public void ImportPressed()
     {
         string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
-        JsonReader.ConvertToObject(DefaultPath);
+        JsonReader reader = new JsonReader();
+        reader.ConvertToObject(DefaultPath);
     }
 
     public void NullatorPressed()
