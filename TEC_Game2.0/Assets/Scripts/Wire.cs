@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Wire : ElementBase
+    [Serializable]
+    public class Wire : ElementBase
     {
         public Vector3Int secondPosition;
 

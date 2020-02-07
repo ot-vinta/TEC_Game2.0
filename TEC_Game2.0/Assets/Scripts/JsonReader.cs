@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Assets.Models;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -28,56 +26,25 @@ namespace Assets.Scripts
             ClearTilemap();
             Scheme.Clear();
 
-            string line = json.Substring(16, json.IndexOf('\n') - 19);
-
-            while (json != "")
-            {
-                Debug.Log(line);
-                AddElementToScheme(line);
-
-                if (json.IndexOf('\n') == -1)
-                    json = json.Substring(json.IndexOf(']') + 2);
-                else
-                    json = json.Substring(json.IndexOf('\n') + 1);
-
-                if (json.IndexOf('\n') == -1 && json != "")
-                    line = json.Substring(2, json.IndexOf(']') - 3);
-                else if (json != "")
-                    line = json.Substring(2, json.IndexOf('\n') - 5);
-            }
-
-            reader.Close();
-
+            Elements elements = JsonUtility.FromJson<Elements>(json);
+            PlaceElements(elements.Resistors, "Sprites/ResistorSprite");
+            PlaceElements(elements.Conductors, "Sprites/ConductorSprite");
+            PlaceElements(elements.Wires, "Sprites/HalfWireSprite");
+            PlaceElements(elements.Nullators, "Sprites/NullatorSprite");
+            PlaceElements(elements.Norators, "Sprites/NoratorSprite");
         }
 
-        private void AddElementToScheme(string line)
+        private void PlaceElements<T>(List<T> elements, string texturePath)
         {
-            string type = line.Substring(0, line.IndexOf('\"'));
-            line = line.Substring(line.IndexOf('\"') + 3);
-
-            switch (type)
+            foreach (T element in elements)
             {
-                case "Resistor":
-                    PlaceElement(JsonUtility.FromJson<Resistor>(line), "Sprites/ResistorSprite");
-                    break;
-                case "Conductor":
-                    PlaceElement(JsonUtility.FromJson<Conductor>(line), "Sprites/ConductorSprite");
-                    break;
-                case "Nullator":
-                    PlaceElement(JsonUtility.FromJson<Nullator>(line), "Sprites/NullatorSprite");
-                    break;
-                case "Norator":
-                    PlaceElement(JsonUtility.FromJson<Norator>(line), "Sprites/NoratorSprite");
-                    break;
-                case "Wire":
-                    PlaceElement(JsonUtility.FromJson<Wire>(line), "Sprites/HalfWireSprite");
-                    break;
+                PlaceElement(element as ElementBase, texturePath);
             }
+
         }
 
         private void PlaceElement(ElementBase element, string texturePath)
         {
-
             Scheme.AddElement(element);
             Texture2D texture = Resources.Load<Texture2D>(texturePath);
 
@@ -112,7 +79,7 @@ namespace Assets.Scripts
 
             if (element is Wire)
             {
-                Wire temp = (Wire) element;
+                Wire temp = (Wire)element;
 
                 scale = temp.pivotPosition.x == temp.secondPosition.x
                     ? (Math.Abs(temp.pivotPosition.y - temp.secondPosition.y) + 0.01f) / 2

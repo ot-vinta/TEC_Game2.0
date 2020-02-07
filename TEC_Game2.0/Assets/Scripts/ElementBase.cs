@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    [Serializable]
     public abstract class ElementBase
     {
         public Vector3Int pivotPosition;

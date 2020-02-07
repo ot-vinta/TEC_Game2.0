@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Norator : ChainElement
+    [Serializable]
+    public class Norator : ChainElement
     {
         public Norator(Vector3Int position, int angle) : base(position, angle)
         {

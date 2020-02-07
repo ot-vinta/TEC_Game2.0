@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Resistor : ChainElement
+    [Serializable]
+    public class Resistor : ChainElement
     {
         
         public Resistor(Vector3Int position, int angle) : base(position, angle)

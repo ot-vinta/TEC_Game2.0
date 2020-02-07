@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Nullator : ChainElement
+    [Serializable]
+    public class Nullator : ChainElement
     {
         public Nullator(Vector3Int position, int angle) : base(position, angle)
         {

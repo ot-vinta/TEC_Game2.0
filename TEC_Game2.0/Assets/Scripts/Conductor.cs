@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Conductor : ChainElement
+    [Serializable]
+    public class Conductor : ChainElement
     {
 
         public Conductor(Vector3Int position, int angle) : base(position, angle)
