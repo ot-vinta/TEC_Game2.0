@@ -22,7 +22,7 @@ public class NewLevelControls : MonoBehaviour
     public void SavePressed()
     {
         string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
-        JsonWriter.ConvertToJson(Scheme.elements, Scheme.GetWiresList(), DefaultPath);
+        JsonWriter.ConvertToJson(Scheme.ToSerializableElements(), DefaultPath);
     }
 
     public void ImportPressed()

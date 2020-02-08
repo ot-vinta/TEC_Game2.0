@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Models;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -76,6 +77,39 @@ namespace Assets.Scripts
         public static int GetElementsCount()
         {
             return elements.Count;
+        }
+
+        public static Elements ToSerializableElements()
+        {
+            Elements ans = new Elements();
+            ans.Resistors = new List<Resistor>();
+            ans.Conductors = new List<Conductor>();
+            ans.Nullators = new List<Nullator>();
+            ans.Norators = new List<Norator>();
+            ans.Wires = new List<Wire>();
+            foreach (var element in elements.Values)
+            {
+                switch (element)
+                {
+                    case Resistor temp:
+                        ans.Resistors.Add(temp);
+                        break;
+                    case Conductor temp:
+                        ans.Conductors.Add(temp);
+                        break;
+                    case Nullator temp:
+                        ans.Nullators.Add(temp);
+                        break;
+                    case Norator temp:
+                        ans.Norators.Add(temp);
+                        break;
+                    case Wire temp:
+                        ans.Wires.Add(temp);
+                        break;
+                }
+            }
+
+            return ans;
         }
 
         public static void Clear()

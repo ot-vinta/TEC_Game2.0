@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Models;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -11,20 +12,9 @@ namespace Assets.Scripts
     class JsonWriter
     {
 
-        public static void ConvertToJson(Dictionary<int, ElementBase> elements, List<Wire> wires, string path)
+        public static void ConvertToJson(Elements elements, string path)
         {
-            string json = "{\"Elements\": [";
-
-            List<ElementBase> elem = new List<ElementBase>(elements.Values);
-
-            for (int i = 0; i < elem.Count; i++)
-            {
-                if (i != elem.Count - 1)
-                    json = json + "{\"" + elem[i] + "\": " + JsonUtility.ToJson(elem[i]) + "}, \n";
-                else
-                    json = json + "{\"" + elem[i] + "\": " + JsonUtility.ToJson(elem[i]) + "}]}";
-            }
-
+            string json = JsonUtility.ToJson(elements);
             File.WriteAllText(path, json);
         }
     }
