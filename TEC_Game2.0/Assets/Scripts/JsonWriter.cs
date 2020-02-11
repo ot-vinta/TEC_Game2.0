@@ -14,8 +14,11 @@ namespace Assets.Scripts
 
         public static void ConvertToJson(Elements elements, string path)
         {
+            Directory.CreateDirectory(Path.Combine(Application.persistentDataPath, "Levels"));
             string json = JsonUtility.ToJson(elements);
-            File.WriteAllText(path, json);
+            StreamWriter writer = new StreamWriter(path);
+            writer.WriteLine(json);
+            writer.Close();
         }
     }
 }

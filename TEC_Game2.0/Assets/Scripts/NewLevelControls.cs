@@ -21,13 +21,13 @@ public class NewLevelControls : MonoBehaviour
 
     public void SavePressed()
     {
-        string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
+        string DefaultPath = System.IO.Path.Combine(Application.persistentDataPath, "Levels/TestLevel.json");
         JsonWriter.ConvertToJson(Scheme.ToSerializableElements(), DefaultPath);
     }
 
     public void ImportPressed()
     {
-        string DefaultPath = Application.dataPath + "/Levels/TestLevel.json";
+        string DefaultPath = System.IO.Path.Combine(Application.persistentDataPath, "Levels/TestLevel.json");
         JsonReader reader = new JsonReader();
         reader.ConvertToObject(DefaultPath);
     }

@@ -22,6 +22,7 @@ namespace Assets.Scripts
         {
             StreamReader reader = new StreamReader(path);
             string json = reader.ReadToEnd();
+            reader.Close();
 
             ClearTilemap();
             Scheme.Clear();
