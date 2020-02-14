@@ -20,19 +20,26 @@ namespace Assets.Scripts
 
         public void ConvertToObject(string path)
         {
-            StreamReader reader = new StreamReader(path);
-            string json = reader.ReadToEnd();
-            reader.Close();
+            if (File.Exists(path))
+            {
+                StreamReader reader = new StreamReader(path);
+                string json = reader.ReadToEnd();
+                reader.Close();
 
-            ClearTilemap();
-            Scheme.Clear();
+                ClearTilemap();
+                Scheme.Clear();
 
-            Elements elements = JsonUtility.FromJson<Elements>(json);
-            PlaceElements(elements.Resistors, "Sprites/ResistorSprite");
-            PlaceElements(elements.Conductors, "Sprites/ConductorSprite");
-            PlaceElements(elements.Wires, "Sprites/HalfWireSprite");
-            PlaceElements(elements.Nullators, "Sprites/NullatorSprite");
-            PlaceElements(elements.Norators, "Sprites/NoratorSprite");
+                Elements elements = JsonUtility.FromJson<Elements>(json);
+                PlaceElements(elements.Resistors, "Sprites/ResistorSprite");
+                PlaceElements(elements.Conductors, "Sprites/ConductorSprite");
+                PlaceElements(elements.Wires, "Sprites/HalfWireSprite");
+                PlaceElements(elements.Nullators, "Sprites/NullatorSprite");
+                PlaceElements(elements.Norators, "Sprites/NoratorSprite");
+            }
+            else
+            {
+                //Warning
+            }
         }
 
         private void PlaceElements<T>(List<T> elements, string texturePath)
@@ -91,6 +98,25 @@ namespace Assets.Scripts
 
             m.SetTRS(Vector3.zero, rotation, new Vector3(scale, 1, 1));
             tile.transform = m;
+
+            switch (texturePath)
+            {
+                case "Sprites/ResistorSprite":
+                    tile.name = "Resistor";
+                    break;
+                case "Sprites/ConductorSprite":
+                    tile.name = "Conductor";
+                    break;
+                case "Sprites/HalfWireSprite":
+                    tile.name = "Wire";
+                    break;
+                case "Sprites/NullatorSprite":
+                    tile.name = "Nullator";
+                    break;
+                case "Sprites/NoratorSprite":
+                    tile.name = "Norator";
+                    break;
+            }
 
             map.SetTile(element.pivotPosition, tile);
         }
