@@ -10,11 +10,14 @@ public class PlayLevelControls : MonoBehaviour
     private GameObject map;
     UIInputBox dialog;
     UIList dialogList;
+    private UIChooseBox chooseDialog;
     void Start()
     {
         map = GameObject.Find("Map");
         dialog = new UIInputBox();
         dialogList = new UIList();
+
+        chooseDialog = new UIChooseBox();
     }
 
     public void BackPressed()
@@ -24,9 +27,10 @@ public class PlayLevelControls : MonoBehaviour
 
     public void ImportPressed()
     {
-        string DefaultPath = System.IO.Path.Combine(Application.persistentDataPath, "Levels/TestLevel.json");
-        JsonReader reader = new JsonReader();
-        reader.ConvertToObject(DefaultPath);
+        if (chooseDialog.IsDialogActive())
+            chooseDialog.HideDialog();
+        else
+            chooseDialog.ShowDialog();
     }
 
     public void NullatorPressed()

@@ -11,7 +11,6 @@ public class NewLevelControls : MonoBehaviour
     private UIInputBox dialog;
     private UIChooseBox chooseDialog;
     private string exportPath;
-    private string importPath;
 
     void Start()
     {
@@ -19,7 +18,7 @@ public class NewLevelControls : MonoBehaviour
         dialog = new UIInputBox();
         chooseDialog = new UIChooseBox();
 
-        exportPath = importPath = Application.persistentDataPath + "/Levels/";
+        exportPath = Application.persistentDataPath + "/Levels/";
     }
 
     public void BackPressed()
@@ -43,12 +42,20 @@ public class NewLevelControls : MonoBehaviour
             return true;
         });
 
-        dialog.ShowDialog("Название схемы:", "Сохранить");
+        if (dialog.IsDialogActive())
+        {
+            dialog.HideDialog();
+        }
+        else
+            dialog.ShowDialog("Название схемы:", "Сохранить");
     }
 
     public void ImportPressed()
     {
-        chooseDialog.ShowDialog();
+        if (chooseDialog.IsDialogActive())
+            chooseDialog.HideDialog();
+        else
+            chooseDialog.ShowDialog();
     }
 
     public void ConductorPressed()
