@@ -8,10 +8,18 @@ using UnityEngine.SceneManagement;
 public class NewLevelControls : MonoBehaviour
 {
     private GameObject map;
+    private UIInputBox dialog;
+    private UIChooseBox chooseDialog;
+    private string exportPath;
+    private string importPath;
 
     void Start()
     {
         map = GameObject.Find("Map");
+        dialog = new UIInputBox();
+        chooseDialog = new UIChooseBox();
+
+        exportPath = importPath = Application.persistentDataPath + "/Levels/";
     }
 
     public void BackPressed()
@@ -21,15 +29,26 @@ public class NewLevelControls : MonoBehaviour
 
     public void SavePressed()
     {
-        string DefaultPath = System.IO.Path.Combine(Application.persistentDataPath, "Levels/TestLevel.json");
-        JsonWriter.ConvertToJson(Scheme.ToSerializableElements(), DefaultPath);
+        dialog.SetOnClickListener(message =>
+        {
+            if (message != "")
+            {
+                exportPath += message + ".json";
+                JsonWriter.ConvertToJson(Scheme.ToSerializableElements(), exportPath);
+                exportPath = Application.persistentDataPath + "/Levels/";
+                dialog.HideDialog();
+            }
+            else
+                dialog.title.text = "Введите какое-нибудь имя!";
+            return true;
+        });
+
+        dialog.ShowDialog("Название схемы:", "Сохранить");
     }
 
     public void ImportPressed()
     {
-        string DefaultPath = System.IO.Path.Combine(Application.persistentDataPath, "Levels/TestLevel.json");
-        JsonReader reader = new JsonReader();
-        reader.ConvertToObject(DefaultPath);
+        chooseDialog.ShowDialog();
     }
 
     public void ConductorPressed()
