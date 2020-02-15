@@ -31,8 +31,8 @@ public class UIList
     public void ShowDialog(string[] elements, string buttonText = "Ok")
     {
         dialogCanvas.SetActive(true);
-        scrollRect.content.sizeDelta = new Vector2(0, 16 * elements.Length);
-        contentText.rectTransform.sizeDelta = new Vector2(160, 16 * elements.Length);
+        scrollRect.content.sizeDelta = new Vector2(0, 17 * elements.Length);
+        contentText.rectTransform.sizeDelta = new Vector2(160*4, 16 * 5 * elements.Length);
         contentText.text = "";
         foreach (string elem in elements)
         {

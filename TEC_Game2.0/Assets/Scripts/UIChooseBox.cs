@@ -60,10 +60,10 @@ namespace Assets.Scripts
                 {
                     GameObject newButton = GameObject.Instantiate(Resources.Load("Prefabs/ButtonPrefab")) as GameObject;
                     newButton.transform.position = contentField.transform.position;
-                    newButton.transform.position += new Vector3(0, -i * 0.55f, 0); 
+
+                    newButton.transform.position += new Vector3(0.06f, -i * 0.55f - 0.06f, 0); 
                     newButton.GetComponent<RectTransform>().SetParent(contentField.transform);
                     newButton.GetComponent<RectTransform>().localScale = new Vector3(1, 1, 1);
-                    newButton.GetComponent<RectTransform>().SetInsetAndSizeFromParentEdge(RectTransform.Edge.Left, 0, 200);
 
                     newButton.GetComponentInChildren<Text>().text = fileNames[i];
 
@@ -74,7 +74,7 @@ namespace Assets.Scripts
                     buttons.Add(fileNames[i], newButton);
                 }
 
-            scrollRect.content.sizeDelta = new Vector2(0, 25 * fileNames.Count);
+            scrollRect.content.sizeDelta = new Vector2(0, (float) Math.Max(25 * fileNames.Count, 100.1));
 
             cancelButton.GetComponentInChildren<Text>().text = "Отмена";
             cancelButton.onClick.AddListener(CancelTask);
