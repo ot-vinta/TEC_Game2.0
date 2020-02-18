@@ -28,6 +28,7 @@ public class TilePlacer : MonoBehaviour
     private bool horizontalPlaced;
     private float angle;
     private bool isInfinite;
+    private string type;
 
     private bool wirePlacing;
     private int wireEndsCount;
@@ -73,6 +74,8 @@ public class TilePlacer : MonoBehaviour
         MoveToNearestCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
         string path = "";
+
+        this.type = type;
 
         switch (type)
         {
@@ -160,7 +163,22 @@ public class TilePlacer : MonoBehaviour
             //Add classes for chain elements
             //Change to specific element class(TO DO)
             Vector3Int pos = map.WorldToCell(sr.transform.position);
-            AddElementToScheme(new ChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+
+            switch (type)
+            {
+                case "Resistor":
+                    AddElementToScheme(new Resistor(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+                case "Conductor":
+                    AddElementToScheme(new Conductor(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+                case "Nullator":
+                    AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+                case "Norator":
+                    AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+            }
             //------------------------------------------------------
 
             if (isInfinite)
@@ -259,7 +277,7 @@ public class TilePlacer : MonoBehaviour
                 else
                     pos2.x = pos1.x;
 
-                AddElementToScheme(new Wire(pos1, pos2));
+                AddElementToScheme(new Wire(pos1, pos2, (int) angle));
 
                 if (isInfinite)
                     Init("Wire", 0, true);

@@ -30,6 +30,7 @@ public class UIInputBox
     {
         dialogCanvas.SetActive(true);
         this.title.text = title;
+        inputField.text = "";
         button.GetComponentInChildren<Text>().text = buttonText;
     }
 

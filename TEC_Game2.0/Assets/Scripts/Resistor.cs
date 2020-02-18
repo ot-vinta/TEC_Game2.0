@@ -8,15 +8,16 @@ using UnityEngine;
 namespace Assets.Scripts
 {
     [Serializable]
-    public class ChainElement : ElementBase
+    public class Resistor : ChainElement
     {
-        public ChainElement(Vector3Int position, int angle) : base(position, angle)
+        
+        public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
         }
 
         public override string ToString()
         {
-            return "ChainElement";
+            return "Resistor";
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Models;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -11,14 +12,12 @@ namespace Assets.Scripts
     static class Scheme
     {
         private static ElementBase[,,] chainElements = new ElementBase[Map.MapSizeX + 1, Map.MapSizeY + 1, 10000];
-        private static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
+        public static Dictionary<int, ElementBase> elements = new Dictionary<int, ElementBase>();
         private static int wiresCount = 0;
         private static int nextId = 1;
 
         public static void AddElement(ElementBase element)
         {
-            Debug.Log(element.pivotPosition);
-            Debug.Log(element);
             chainElements[element.pivotPosition.x, element.pivotPosition.y, element.pivotPosition.z] = element;
             elements.Add(nextId, element);
             element.SetId(nextId);
@@ -80,9 +79,42 @@ namespace Assets.Scripts
             return elements.Count;
         }
 
+        public static Elements ToSerializableElements()
+        {
+            Elements ans = new Elements();
+            ans.Resistors = new List<Resistor>();
+            ans.Conductors = new List<Conductor>();
+            ans.Nullators = new List<Nullator>();
+            ans.Norators = new List<Norator>();
+            ans.Wires = new List<Wire>();
+            foreach (var element in elements.Values)
+            {
+                switch (element)
+                {
+                    case Resistor temp:
+                        ans.Resistors.Add(temp);
+                        break;
+                    case Conductor temp:
+                        ans.Conductors.Add(temp);
+                        break;
+                    case Nullator temp:
+                        ans.Nullators.Add(temp);
+                        break;
+                    case Norator temp:
+                        ans.Norators.Add(temp);
+                        break;
+                    case Wire temp:
+                        ans.Wires.Add(temp);
+                        break;
+                }
+            }
+
+            return ans;
+        }
+
         public static void Clear()
         {
-            chainElements = new ElementBase[Map.MapSizeY + 1, Map.MapSizeX + 1, 10000];
+            chainElements = new ElementBase[Map.MapSizeX + 1, Map.MapSizeY + 1, 10000];
             elements.Clear();
             wiresCount = 0;
         }

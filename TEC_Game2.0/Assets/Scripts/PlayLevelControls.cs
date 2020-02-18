@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -9,11 +10,14 @@ public class PlayLevelControls : MonoBehaviour
     private GameObject map;
     UIInputBox dialog;
     UIList dialogList;
+    private UIChooseBox chooseDialog;
     void Start()
     {
         map = GameObject.Find("Map");
         dialog = new UIInputBox();
         dialogList = new UIList();
+
+        chooseDialog = new UIChooseBox();
     }
 
     public void BackPressed()
@@ -23,7 +27,10 @@ public class PlayLevelControls : MonoBehaviour
 
     public void ImportPressed()
     {
-        //TO DO
+        if (chooseDialog.IsDialogActive())
+            chooseDialog.HideDialog();
+        else
+            chooseDialog.ShowDialog();
     }
 
     public void NullatorPressed()
