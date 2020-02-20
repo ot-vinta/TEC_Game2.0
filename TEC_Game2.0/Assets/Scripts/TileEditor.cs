@@ -178,6 +178,12 @@ public class TileEditor : MonoBehaviour
 
     private void DeleteElement(Vector3Int pos)
     {
+        ElementBase elem = Scheme.GetElement(pos);
+        if (elem is LabeledChainElement)
+        {
+            Text label = ((LabeledChainElement)elem).label;
+            Destroy(label);
+        }
         Scheme.RemoveElement(pos);
         map.SetTile(pos, new Tile());
     }
