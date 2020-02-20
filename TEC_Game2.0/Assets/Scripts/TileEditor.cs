@@ -193,19 +193,22 @@ public class TileEditor : MonoBehaviour
 
     private void MoveElement(Vector3Int pos, Tile tile)
     {
-        if (GetStatus() != StatusDefault)
-            SetDefault();
-        mapObject.GetComponent<TilePlacer>().enabled = true;
-        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false);
-
         backupElement = Scheme.GetElement(pos);
-        string label;
+        string label = null;
         if (backupElement is LabeledChainElement)
         {
             Text labelElem = ((LabeledChainElement)backupElement).label;
             label = labelElem.text;
             Destroy(labelElem);
+            //LabeledChainElement added = (LabeledChainElement) Scheme.GetLatestElement();
+            //added.SetName(label);
         }
+        if (GetStatus() != StatusDefault)
+            SetDefault();
+        mapObject.GetComponent<TilePlacer>().enabled = true;
+        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false, label);
+
+        
         backupPos = pos;
         backupTile = tile;
 

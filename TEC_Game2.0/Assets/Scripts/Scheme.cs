@@ -45,6 +45,11 @@ namespace Assets.Scripts
                 return null;
         }
 
+        public static ElementBase GetLatestElement()
+        {
+            return elements[nextId - 1];
+        }
+
         public static int GetRotation(Vector3Int pos)
         {
             ChainElement elem = (ChainElement) chainElements[pos.x, pos.y, pos.z];

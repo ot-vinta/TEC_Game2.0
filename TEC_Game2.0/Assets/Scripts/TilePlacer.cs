@@ -29,6 +29,8 @@ public class TilePlacer : MonoBehaviour
     private float angle;
     private bool isInfinite;
 
+    private string label;
+
     private bool wirePlacing;
     private int wireEndsCount;
     private Vector3 wireFirstPosition;
@@ -46,6 +48,7 @@ public class TilePlacer : MonoBehaviour
 
         if (!wirePlacing)
         {
+            Debug.Log("TilePlacer.Update, !wirePlacing");
             MoveSprite();
             RotateSprite();
         }
@@ -56,6 +59,9 @@ public class TilePlacer : MonoBehaviour
     public void Init(string type, int startAngle, bool isInfinite, string label = null)
     {
         this.isInfinite = isInfinite;
+        this.label = label;
+        Debug.Log("TilePlacer.Init, this.label is set");
+        //Debug.Log("TilePlacer.Init, this.label is " + label);
         mapObject = GameObject.Find("Map");
         map = mapObject.GetComponent<Tilemap>();
         elementTile = null;
@@ -160,7 +166,14 @@ public class TilePlacer : MonoBehaviour
             //Add classes for chain elements
             //Change to specific element class(TO DO)
             Vector3Int pos = map.WorldToCell(sr.transform.position);
-            AddElementToScheme(new LabeledChainElement(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+            Debug.Log("TilePlacer.MoveSprite, creating new elem");
+            LabeledChainElement newElem = new LabeledChainElement(new Vector3Int(pos.x, pos.y, 1), (int)angle);
+            if (!String.IsNullOrEmpty(this.label))
+            {
+                newElem.SetName(this.label);
+                this.label = null;
+            }
+            AddElementToScheme(newElem);
             //------------------------------------------------------
 
             if (isInfinite)
