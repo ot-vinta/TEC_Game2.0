@@ -4,6 +4,7 @@ using System.Net;
 using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
@@ -198,6 +199,13 @@ public class TileEditor : MonoBehaviour
         mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false);
 
         backupElement = Scheme.GetElement(pos);
+        string label;
+        if (backupElement is LabeledChainElement)
+        {
+            Text labelElem = ((LabeledChainElement)backupElement).label;
+            label = labelElem.text;
+            Destroy(labelElem);
+        }
         backupPos = pos;
         backupTile = tile;
 

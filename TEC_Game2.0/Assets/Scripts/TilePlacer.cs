@@ -53,7 +53,7 @@ public class TilePlacer : MonoBehaviour
             PlaceWire();
     }
 
-    public void Init(string type, int startAngle, bool isInfinite)
+    public void Init(string type, int startAngle, bool isInfinite, string label = null)
     {
         this.isInfinite = isInfinite;
         mapObject = GameObject.Find("Map");
