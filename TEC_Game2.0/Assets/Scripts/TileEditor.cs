@@ -16,6 +16,7 @@ public class TileEditor : MonoBehaviour
     private ElementBase backupElement;
     private Vector3Int backupPos;
     private Tile backupTile;
+    private string backupString; 
 
     public const string StatusDelete = "delete";
     public const string StatusRotate = "rotate";
@@ -205,6 +206,7 @@ public class TileEditor : MonoBehaviour
         {
             Text labelElem = ((LabeledChainElement)backupElement).label;
             label = labelElem.text;
+            backupString = label;
             Destroy(labelElem);
             //LabeledChainElement added = (LabeledChainElement) Scheme.GetLatestElement();
             //added.SetName(label);
@@ -217,6 +219,7 @@ public class TileEditor : MonoBehaviour
         
         backupPos = pos;
         backupTile = tile;
+        
 
         DeleteElement(pos);
     }
@@ -225,6 +228,10 @@ public class TileEditor : MonoBehaviour
     {
         if (backupElement != null)
         {
+            if (backupElement is LabeledChainElement)
+            {
+                ((LabeledChainElement)backupElement).AddLabel(backupString, backupElement.pivotPosition);
+            }
             Scheme.AddElement(backupElement);
             map.SetTile(backupPos, backupTile);
             SetMove();
