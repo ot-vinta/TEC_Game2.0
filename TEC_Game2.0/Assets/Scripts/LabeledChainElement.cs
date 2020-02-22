@@ -22,10 +22,9 @@ namespace Assets.Scripts
             GameObject labels = GameObject.Find("Labels");
             Text template = labels.GetComponentInChildren<Text>();
             Tilemap tilemap = GameObject.FindObjectOfType<Tilemap>();
-            Vector3 worldPosition = tilemap.CellToWorld(position);
-            Vector3Int worldPositionInt = new Vector3Int((int)worldPosition.x, (int)worldPosition.y, (int)worldPosition.z);
+            Vector3 worldPosition = new Vector3(tilemap.CellToWorld(position).x + (float) 0.3, tilemap.CellToWorld(position).y + (float) 0.1, tilemap.CellToWorld(position).z);
 
-            this.label = UnityEngine.Object.Instantiate(template, worldPositionInt, Quaternion.identity, labels.transform);
+            this.label = UnityEngine.Object.Instantiate(template, worldPosition, Quaternion.identity, labels.transform);
 
             this.label.text = label;
             this.label.enabled = true;

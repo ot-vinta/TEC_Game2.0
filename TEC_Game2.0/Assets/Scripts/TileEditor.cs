@@ -194,6 +194,18 @@ public class TileEditor : MonoBehaviour
         int angle = Scheme.GetRotation(pos);
         angle += 90 % 360;
         Scheme.RotateElement(pos, angle);
+        ElementBase rotElem = Scheme.GetElement(pos);
+        if (rotElem is LabeledChainElement)
+        {
+            if (angle % 180 == 0)
+            {
+                ((LabeledChainElement)rotElem).label.transform.Rotate(0, 0, -90);
+            }
+            else
+            {
+                ((LabeledChainElement)rotElem).label.transform.Rotate(0, 0, 90);
+            }
+        }
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
         map.SetTransformMatrix(pos, Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
     }
