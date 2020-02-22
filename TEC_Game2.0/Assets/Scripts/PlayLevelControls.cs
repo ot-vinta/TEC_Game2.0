@@ -86,12 +86,19 @@ public class PlayLevelControls : MonoBehaviour
 
     public void PlayPressed() //Надо будет передвинуть
     {
-        dialog.SetOnClickListener(message =>
+        var connectionTree = ConnectionsMaker.MakeConnectionTree();
+        if (connectionTree.Count == 0)
         {
-            dialog.title.text = message;
-            return true;
-        });
-        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
+            string[] alarmShit = new string[1];
+            alarmShit[0] = "Схема не связана";
+            dialogList.ShowDialog(alarmShit);
+        }
+        else
+        {
+            string[] alarmShit = new string[1];
+            alarmShit[0] = "Схема связана. Алилуя нах!!!";
+            dialogList.ShowDialog(alarmShit);
+        }
     }
 
     public void RestartPressed() //Надо будет передвинуть
@@ -118,6 +125,11 @@ public class PlayLevelControls : MonoBehaviour
 
     public void StatisticsPressed()
     {
-        //TO DO
+        dialog.SetOnClickListener(message =>
+        {
+            dialog.title.text = message;
+            return true;
+        });
+        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
     }
 }
