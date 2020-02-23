@@ -13,7 +13,7 @@ namespace Assets.Scripts
         public Conductor(Vector3Int position, int angle) : base(position, angle)
         {
             this.label.text = "Проводимость";
-            //this.label
+            this.label.color = Color.white;
         }
         public Conductor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {

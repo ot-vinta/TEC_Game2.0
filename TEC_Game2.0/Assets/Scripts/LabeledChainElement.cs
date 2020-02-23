@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
+    [Serializable]
     public class LabeledChainElement : ChainElement
     {
         public Text label;
