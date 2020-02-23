@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -98,10 +99,14 @@ public class PlayLevelControls : MonoBehaviour
             SchemeSimplifier simplifier = new SchemeSimplifier(connectionGraph);
             var elementsToDelete = simplifier.SimplifyAsync();
 
-            foreach (var element in elementsToDelete.Keys)
+            foreach (var elementsInOnTiming in elementsToDelete)
             {
-                map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
-                Scheme.RemoveElement(element);
+                foreach (var element in elementsInOnTiming.Value)
+                {
+                    Scheme.RemoveElement(element);
+                    map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
+                    //Thread.Sleep(300);
+                }
             }
         }
     }

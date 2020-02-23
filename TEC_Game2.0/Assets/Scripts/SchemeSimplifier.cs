@@ -40,14 +40,24 @@ namespace Assets.Scripts
             map = mapObject.GetComponent<Tilemap>();
         }
 
-        public Dictionary<ElementBase, int> SimplifyAsync()
+        public Dictionary<int, List<ElementBase>> SimplifyAsync()
         {
             Simplify();
 
             mapObject = GameObject.Find("Map");
             map = mapObject.GetComponent<Tilemap>();
 
-            return ElementsToDelete;
+            Dictionary<int, List<ElementBase>> result = new Dictionary<int, List<ElementBase>>();
+
+            foreach (var elementWithTiming in ElementsToDelete)
+            {
+                if (result.ContainsKey(elementWithTiming.Value))
+                    result[elementWithTiming.Value].Add(elementWithTiming.Key);
+                else
+                    result.Add(elementWithTiming.Value, new List<ElementBase>(){elementWithTiming.Key});
+            }
+
+            return result;
         }
 
         private void Simplify()
