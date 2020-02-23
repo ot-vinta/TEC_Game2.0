@@ -171,9 +171,11 @@ public class TilePlacer : MonoBehaviour
                         break;
                     case "Nullator":
                         AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+                        isInfinite = false;
                         break;
                     case "Norator":
                         AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+                        isInfinite = false;
                         break;
                 }
             }

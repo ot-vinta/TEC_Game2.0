@@ -69,7 +69,7 @@ namespace Assets.Scripts
             var verticesInIteration = new List<TreeElement>();
             var verticesInNextIteration = new List<TreeElement>();
             var list = vertexTree.Keys.ToList();
-            for (var i = 0; i < 4; i++)
+            for (var i = 2; i < 6; i++)
             {
                 verticesInIteration.Add(list[i]);
             }
@@ -94,14 +94,14 @@ namespace Assets.Scripts
                         var verticesToRemove = new List<TreeElement>();
                         foreach (var vertexToCheck in vertexTree[vertex])
                         {
-                            TreeElement lastVertexIndBranch = null;
+                            TreeElement lastVertexInBranch = null;
                             Conductor conductor = null;
-                            if (BranchContainsOnlyConductor(vertexToCheck, ref lastVertexIndBranch, ref conductor))
+                            if (BranchContainsOnlyConductor(vertexToCheck, ref lastVertexInBranch, ref conductor))
                             {
                                 bool hasVertex = false;
                                 foreach (var testVertex in verticesInIteration)
                                 {
-                                    if (testVertex.position.Equals(lastVertexIndBranch.position))
+                                    if (testVertex.position.Equals(lastVertexInBranch.position))
                                         hasVertex = true;
                                 }
 
@@ -109,12 +109,16 @@ namespace Assets.Scripts
                                 {
                                     if (!ElementsToDelete.ContainsKey(conductor))
                                         ElementsToDelete.Add(conductor, stepCount);
-                                    DeleteBranch(vertexToCheck);
+                                    if (!ElementsToDelete.ContainsKey(g[vertex.position][vertexToCheck.position]))
+                                        ElementsToDelete.Add(g[vertex.position][vertexToCheck.position], stepCount);
+                                    DeleteBranch(vertexToCheck, stepCount);
                                     verticesToRemove.Add(vertexToCheck);
+                                    verticesInNextIteration.Add(vertex);
                                 }
-
-                                verticesInNextIteration.Add(vertex);
+                                else if (ConductorMayBeConnectedParallel(vertexToCheck, lastVertexInBranch) && !verticesInNextIteration.Contains(vertex))
+                                    verticesInNextIteration.Add(vertex);
                             }
+
                         }
 
                         foreach (var vertexToRemove in verticesToRemove)
@@ -130,12 +134,26 @@ namespace Assets.Scripts
             }
         }
 
-        private void DeleteElements(ElementBase element, int delay)
+        private bool ConductorMayBeConnectedParallel(TreeElement vertexToCheck, TreeElement lastVertexInBranch)
         {
-            //Thread.Sleep(400 * delay);
+            while (vertexToCheck.root.root != null)
+            {
+                vertexToCheck = vertexToCheck.root;
+            }
 
-            //Scheme.RemoveElement(element);
-            //map.SetTile(element.pivotPosition, new Tile());
+            var vertexFromOtherBranch = vertexTree[vertexToCheck.root][1] == vertexToCheck 
+                ? vertexTree[vertexToCheck.root][0] 
+                : vertexTree[vertexToCheck.root][1];
+
+            while (vertexTree[vertexFromOtherBranch].Count > 0)
+            {
+                if (vertexTree[vertexFromOtherBranch].Count > 1)
+                    return false;
+
+                vertexFromOtherBranch = vertexTree[vertexFromOtherBranch][0];
+            }
+
+            return vertexFromOtherBranch.position.Equals(lastVertexInBranch.position);
         }
 
         private bool BranchContainsOnlyConductor(TreeElement vertexToCheck, ref TreeElement lastVertexInBranch, ref Conductor conductor)
@@ -174,7 +192,7 @@ namespace Assets.Scripts
             return conductorsCount <= 1;
         }
 
-        private void DeleteBranch(TreeElement vertexToCheck)
+        private void DeleteBranch(TreeElement vertexToCheck, int deleteStepCount)
         {
             List<TreeElement> treeElementsToDelete = new List<TreeElement>(){vertexToCheck};
             while (vertexTree[vertexToCheck].Count > 0)
@@ -185,6 +203,8 @@ namespace Assets.Scripts
 
             foreach (var elementToDelete in treeElementsToDelete)
             {
+                if (vertexTree[elementToDelete].Count > 0 && !ElementsToDelete.ContainsKey(g[elementToDelete.position][vertexTree[elementToDelete][0].position]))
+                    ElementsToDelete.Add(g[elementToDelete.position][vertexTree[elementToDelete][0].position], deleteStepCount);
                 vertexTree.Remove(elementToDelete);
             }
         }
@@ -193,20 +213,35 @@ namespace Assets.Scripts
         {
             vertexTree.Clear();
             nullorVertices.Clear();
+
+            var verticesInIteration = new List<TreeElement>();
+
             var list = new List<Vector2Int>(g.Keys);
             var nullor = Scheme.GetNullorElementsList();
             var nullatorRoot = new TreeElement((Vector2Int) Scheme.GetNullator().pivotPosition, null);
             var noratorRoot = new TreeElement((Vector2Int) Scheme.GetNorator().pivotPosition, null);
+            vertexTree.Add(nullatorRoot, new List<TreeElement>());
+            vertexTree.Add(noratorRoot, new List<TreeElement>());
             for (var i = 0; i < 4; i++)
             {
-                vertexTree.Add(
-                    nullor[i / 2] is Nullator
-                        ? new TreeElement(list[i], nullatorRoot)
-                        : new TreeElement(list[i], noratorRoot), new List<TreeElement>());
+                if (nullor[i / 2] is Nullator)
+                {
+                    var newElement = new TreeElement(list[i], nullatorRoot);
+                    vertexTree.Add(newElement, new List<TreeElement>());
+                    vertexTree[nullatorRoot].Add(newElement);
+                    verticesInIteration.Add(newElement);
+                }
+                else
+                {
+                    var newElement = new TreeElement(list[i], noratorRoot);
+                    vertexTree.Add(newElement, new List<TreeElement>());
+                    vertexTree[noratorRoot].Add(newElement);
+                    verticesInIteration.Add(newElement);
+                }
                 nullorVertices.Add(list[i]);
             }
 
-            var verticesInIteration = new List<TreeElement>(vertexTree.Keys);
+            
             var verticesInNextIteration = new List<TreeElement>();
 
             while (verticesInIteration.Count > 0)

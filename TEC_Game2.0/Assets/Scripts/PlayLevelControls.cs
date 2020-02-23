@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Assets.Scripts;
@@ -38,18 +39,33 @@ public class PlayLevelControls : MonoBehaviour
     {
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
-        map.GetComponent<TilePlacer>().enabled = true;
-        GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
-        map.GetComponent<TilePlacer>().Init("Nullator", 0, true);
+
+        if (Scheme.GetNullator() != null)
+        {
+            Alarm("Нуллатор уже есть!");
+        }
+        else
+        {
+            map.GetComponent<TilePlacer>().enabled = true;
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
+            map.GetComponent<TilePlacer>().Init("Nullator", 0, true);
+        }
     }
 
     public void NoratorPressed()
     {
         if (map.GetComponent<TileEditor>().GetStatus() != TileEditor.StatusDefault)
             map.GetComponent<TileEditor>().SetDefault();
-        map.GetComponent<TilePlacer>().enabled = true;
-        GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
-        map.GetComponent<TilePlacer>().Init("Norator", 0, true);
+
+        if (Scheme.GetNorator() != null)
+        {
+            Alarm("Норатор уже есть!");
+        }
+        else { 
+            map.GetComponent<TilePlacer>().enabled = true;
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = false;
+            map.GetComponent<TilePlacer>().Init("Norator", 0, true);
+        }
     }
 
     public void WirePressed()
@@ -85,13 +101,15 @@ public class PlayLevelControls : MonoBehaviour
             map.GetComponent<TileEditor>().SetMove();
     }
 
-    public void PlayPressed() //Надо будет передвинуть
+    public void PlayPressed()
     {
         var connectionGraph = ConnectionsMaker.MakeConnectionGraph();
-        if (connectionGraph.Count == 0)
+        if (connectionGraph.Count == 0 || Scheme.GetNorator() == null || Scheme.GetNullator() == null)
         {
-            string[] alarmShit = new string[1];
+            string[] alarmShit = new string[3];
             alarmShit[0] = "Схема не связана";
+            alarmShit[1] = "или не стоит";
+            alarmShit[2] = "нуллатор с норатором!";
             dialogList.ShowDialog(alarmShit);
         }
         else
@@ -103,6 +121,10 @@ public class PlayLevelControls : MonoBehaviour
             {
                 foreach (var element in elementsInOnTiming.Value)
                 {
+                    if (element is Resistor)
+                    {
+                        ReplaceWithWire(element);
+                    }
                     Scheme.RemoveElement(element);
                     map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
                     //Thread.Sleep(300);
@@ -141,5 +163,48 @@ public class PlayLevelControls : MonoBehaviour
             return true;
         });
         dialog.ShowDialog("Проверка вызова из PlayLevelControls");
+    }
+
+    private void Alarm(String text)
+    {
+        string[] elements = new string[1];
+        elements[0] = text;
+        dialogList.ShowDialog(elements);
+    }
+
+    private void ReplaceWithWire(ElementBase element)
+    {
+        Vector3Int firstPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(true, element).x, ConnectionsMaker.GetConnectPosition(true, element).y, Scheme.GetWiresCount() + 2);
+        Vector3Int secondPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(false, element).x, ConnectionsMaker.GetConnectPosition(false, element).y, Scheme.GetWiresCount() + 2);
+        Wire wire = new Wire(firstPos, secondPos, element.angle);
+
+        Scheme.AddElement(wire);
+        Texture2D texture = Resources.Load<Texture2D>("Sprites/HalfWireSprite");
+
+        Tile tile = new Tile
+        {
+            sprite = Sprite.Create(texture,
+                new Rect(0, 0, texture.width, texture.height),
+                new Vector2(0.0f, 0.5f),
+                100,
+                1,
+                SpriteMeshType.Tight,
+                Vector4.zero
+            )
+        };
+
+        float scale = wire.pivotPosition.x == wire.secondPosition.x
+            ? (Math.Abs(wire.pivotPosition.y - wire.secondPosition.y) + 0.01f) / 2
+            : (Math.Abs(wire.pivotPosition.x - wire.secondPosition.x) + 0.01f) / 2;
+        Quaternion rotation = Quaternion.Euler(0, 0, element.angle);
+
+        var m = tile.transform;
+
+        m.SetTRS(Vector3.zero, rotation, new Vector3(scale, 1, 1));
+        tile.transform = m;
+
+        tile.name = "Wire";
+
+        map.GetComponent<Tilemap>().SetTile(wire.pivotPosition, tile);
     }
 }

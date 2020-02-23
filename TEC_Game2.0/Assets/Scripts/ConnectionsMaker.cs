@@ -100,7 +100,7 @@ namespace Assets.Scripts
                 NextIteration(connectionsForNextIteration);
         }
 
-        private static Vector2Int GetConnectPosition(bool isLeft, ElementBase element)
+        public static Vector2Int GetConnectPosition(bool isLeft, ElementBase element)
         {
             if (isLeft)
             {
