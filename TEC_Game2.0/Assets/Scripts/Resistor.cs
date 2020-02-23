@@ -7,7 +7,9 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Resistor : LabeledChainElement
+
+    [Serializable]
+    public class Resistor : LabeledChainElement
     {
         public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
@@ -17,5 +19,10 @@ namespace Assets.Scripts
         {
 
         }
+        public override string ToString()
+        {
+            return "Resistor";
+        }
+        
     }
 }

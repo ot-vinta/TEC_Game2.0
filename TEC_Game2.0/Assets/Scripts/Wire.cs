@@ -7,13 +7,19 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Wire : ElementBase
+    [Serializable]
+    public class Wire : ElementBase
     {
         public Vector3Int secondPosition;
 
-        public Wire(Vector3Int firstPosition, Vector3Int secondPosition) : base(firstPosition)
+        public Wire(Vector3Int firstPosition, Vector3Int secondPosition, int angle) : base(firstPosition, angle)
         {
             this.secondPosition = new Vector3Int(secondPosition.x, secondPosition.y, secondPosition.z);
+        }
+
+        public override string ToString()
+        {
+            return "Wire";
         }
     }
 }

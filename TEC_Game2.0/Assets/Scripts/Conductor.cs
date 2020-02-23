@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
-    class Conductor : LabeledChainElement
+    [Serializable]
+    public class Conductor : LabeledChainElement
     {
         public Conductor(Vector3Int position, int angle) : base(position, angle)
         {
@@ -17,6 +18,10 @@ namespace Assets.Scripts
         public Conductor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {
 
+        }
+        public override string ToString()
+        {
+            return "Conductor";
         }
     }
 }

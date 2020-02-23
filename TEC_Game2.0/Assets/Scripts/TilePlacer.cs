@@ -28,6 +28,7 @@ public class TilePlacer : MonoBehaviour
     private bool horizontalPlaced;
     private float angle;
     private bool isInfinite;
+    private string type;
 
     private string label;
 
@@ -79,6 +80,8 @@ public class TilePlacer : MonoBehaviour
         MoveToNearestCell(Camera.main.ScreenToWorldPoint(Input.mousePosition));
 
         string path = "";
+
+        this.type = type;
 
         switch (type)
         {
@@ -161,19 +164,36 @@ public class TilePlacer : MonoBehaviour
         {
             PlaceTile(Vector3.one, 1);
             Destroy(empty);
-
-            //------------------------------------------------------
-            //Add classes for chain elements
-            //Change to specific element class(TO DO)
+          
             Vector3Int pos = map.WorldToCell(sr.transform.position);
-            Debug.Log("TilePlacer.MoveSprite, creating new elem");
-            LabeledChainElement newElem = new LabeledChainElement(new Vector3Int(pos.x, pos.y, 1), (int)angle);
-            if (!String.IsNullOrEmpty(this.label))
+
+            switch (type)
             {
-                newElem.SetName(this.label);
-                this.label = null;
+                case "Resistor":
+                    Resistor newRes = new Resistor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
+                    if (!String.IsNullOrEmpty(this.label))
+                    {
+                        newRes.SetName(this.label);
+                        this.label = null;
+                    }
+                    AddElementToScheme(newRes);
+                    break;
+                case "Conductor":
+                    Conductor newCon = new Conductor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
+                    if (!String.IsNullOrEmpty(this.label))
+                    {
+                        newCon.SetName(this.label);
+                        this.label = null;
+                    }
+                    AddElementToScheme(newCon);
+                    break;
+                case "Nullator":
+                    AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+                case "Norator":
+                    AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
             }
-            AddElementToScheme(newElem);
             //------------------------------------------------------
 
             if (isInfinite)
@@ -272,7 +292,7 @@ public class TilePlacer : MonoBehaviour
                 else
                     pos2.x = pos1.x;
 
-                AddElementToScheme(new Wire(pos1, pos2));
+                AddElementToScheme(new Wire(pos1, pos2, (int) angle));
 
                 if (isInfinite)
                     Init("Wire", 0, true);
