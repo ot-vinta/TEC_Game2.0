@@ -9,7 +9,7 @@ using UnityEngine.UI;
 
 namespace Assets.Scripts
 {
-    class LabeledChainElement : ChainElement
+    public class LabeledChainElement : ChainElement
     {
         public Text label;
         public LabeledChainElement(Vector3Int position, int angle) : base(position, angle)
