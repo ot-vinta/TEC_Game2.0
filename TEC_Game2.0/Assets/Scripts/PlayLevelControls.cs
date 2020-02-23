@@ -86,8 +86,8 @@ public class PlayLevelControls : MonoBehaviour
 
     public void PlayPressed() //Надо будет передвинуть
     {
-        var connectionTree = ConnectionsMaker.MakeConnectionTree();
-        if (connectionTree.Count == 0)
+        var connectionGraph = ConnectionsMaker.MakeConnectionGraph();
+        if (connectionGraph.Count == 0)
         {
             string[] alarmShit = new string[1];
             alarmShit[0] = "Схема не связана";
@@ -95,9 +95,14 @@ public class PlayLevelControls : MonoBehaviour
         }
         else
         {
-            string[] alarmShit = new string[1];
-            alarmShit[0] = "Схема связана. Алилуя нах!!!";
-            dialogList.ShowDialog(alarmShit);
+            SchemeSimplifier simplifier = new SchemeSimplifier(connectionGraph);
+            var elementsToDelete = simplifier.SimplifyAsync();
+
+            foreach (var element in elementsToDelete.Keys)
+            {
+                map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
+                Scheme.RemoveElement(element);
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Runtime.CompilerServices;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -8,74 +9,95 @@ namespace Assets.Scripts
 {
     class ConnectionsMaker
     {
-        public static Dictionary<TreeElement, List<TreeElement>> MakeConnectionTree()
+        private static Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> g;
+        private static List<ElementBase> schemeElements;
+
+        public static Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> MakeConnectionGraph()
         {
-            List<ElementBase> unusedElements = new List<ElementBase>(Scheme.elements.Values);
-            List<ElementBase> elementsInTree = new List<ElementBase>();
-            Dictionary<TreeElement, List<TreeElement>> connectionTree = new Dictionary<TreeElement, List<TreeElement>>();
+            schemeElements = new List<ElementBase>(Scheme.elements.Values);
+            g = new Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>>();
+
+            List<Vector2Int> connections = new List<Vector2Int>();
 
             foreach (var element in Scheme.GetNullorElementsList())
             {
                 Vector2Int leftPos = GetConnectPosition(true, element);
                 Vector2Int rightPos = GetConnectPosition(false, element);
 
-                connectionTree.Add(new TreeElement(element, leftPos), new List<TreeElement>());
-                connectionTree.Add(new TreeElement(element, rightPos), new List<TreeElement>());
+                connections.Add(leftPos);
+                connections.Add(rightPos);
 
-                unusedElements.Remove(element);
-                elementsInTree.Add(element);
+                g.Add(leftPos, new Dictionary<Vector2Int, ElementBase>());
+                g.Add(rightPos, new Dictionary<Vector2Int, ElementBase>());
+                g[leftPos].Add(rightPos, element);
+                g[rightPos].Add(leftPos, element);
+
+                schemeElements.Remove(element);
             }
 
-            while (unusedElements.Count > 0)
+            NextIteration(connections);
+
+            return g;
+        }
+
+        private static void NextIteration(List<Vector2Int> connections)
+        {
+            List<Vector2Int> connectionsForNextIteration = new List<Vector2Int>();
+
+            foreach (var element in schemeElements)
             {
-                List<ElementBase> removeElements = new List<ElementBase>();
-                foreach (var element in unusedElements)
+                Vector2Int leftPos, rightPos;
+
+                if (element is Wire)
                 {
-                    Vector2Int leftPos, rightPos;
-                    if (element is Wire)
-                    {
-                        Wire wire = (Wire) element;
-                        leftPos = new Vector2Int(wire.pivotPosition.x, wire.pivotPosition.y);
-                        rightPos = new Vector2Int(wire.secondPosition.x, wire.secondPosition.y);
-                    }
-                    else
-                    {
-                        leftPos = GetConnectPosition(true, element);
-                        rightPos = GetConnectPosition(false, element);
-                    }
-
-                    Dictionary < TreeElement, List < TreeElement >> treeCopy = new Dictionary<TreeElement, List<TreeElement>>(connectionTree);
-
-                    foreach (var treeElement in treeCopy.Keys)
-                    {
-                        if (treeElement.connectPosition.Equals(leftPos))
-                        {
-                            connectionTree[treeElement].Add(new TreeElement(element, leftPos));
-                            connectionTree.Add(new TreeElement(element, rightPos), new List<TreeElement>());
-                            removeElements.Add(element);
-                        }
-                        else if (treeElement.connectPosition.Equals(rightPos))
-                        {
-                            connectionTree[treeElement].Add(new TreeElement(element, rightPos));
-                            connectionTree.Add(new TreeElement(element, leftPos), new List<TreeElement>());
-                            removeElements.Add(element);
-                        }
-                    }
+                    Wire wire = (Wire)element;
+                    leftPos = new Vector2Int(wire.pivotPosition.x, wire.pivotPosition.y);
+                    rightPos = new Vector2Int(wire.secondPosition.x, wire.secondPosition.y);
+                }
+                else
+                {
+                    leftPos = GetConnectPosition(true, element);
+                    rightPos = GetConnectPosition(false, element);
                 }
 
-                foreach (var element in removeElements)
+                foreach (var position in connections)
                 {
-                    unusedElements.Remove(element);
-                    elementsInTree.Add(element);
-                }
+                    if (position.Equals(leftPos))
+                    {
+                        if (!g[leftPos].ContainsKey(rightPos))
+                            g[leftPos].Add(rightPos, element);
 
-                if (unusedElements.Count != 0 && removeElements.Count == 0)
-                {
-                    return new Dictionary<TreeElement, List<TreeElement>>();
+                        if (g.ContainsKey(rightPos) && !g[rightPos].ContainsKey(leftPos))
+                            g[rightPos].Add(leftPos, element);
+                        else if (!g.ContainsKey(rightPos))
+                        {
+                            g.Add(rightPos, new Dictionary<Vector2Int, ElementBase>());
+                            g[rightPos].Add(leftPos, element);
+
+                            connectionsForNextIteration.Add(rightPos);
+                        }
+                    }
+
+                    if (position.Equals(rightPos))
+                    {
+                        if (!g[rightPos].ContainsKey(leftPos))
+                            g[rightPos].Add(leftPos, element);
+
+                        if (g.ContainsKey(leftPos) && !g[leftPos].ContainsKey(rightPos))
+                            g[leftPos].Add(rightPos, element);
+                        else if (!g.ContainsKey(leftPos))
+                        {
+                            g.Add(leftPos, new Dictionary<Vector2Int, ElementBase>());
+                            g[leftPos].Add(rightPos, element);
+
+                            connectionsForNextIteration.Add(leftPos);
+                        }
+                    }
                 }
             }
 
-            return connectionTree;
+            if (connectionsForNextIteration.Count > 0)
+                NextIteration(connectionsForNextIteration);
         }
 
         private static Vector2Int GetConnectPosition(bool isLeft, ElementBase element)

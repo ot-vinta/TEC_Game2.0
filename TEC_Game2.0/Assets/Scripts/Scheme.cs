@@ -77,6 +77,16 @@ namespace Assets.Scripts
             return elements.Values.Where(element => element is Nullator || element is Norator).ToList();
         }
 
+        public static Nullator GetNullator()
+        {
+            return elements.Values.OfType<Nullator>().FirstOrDefault();
+        }
+
+        public static Norator GetNorator()
+        {
+            return elements.Values.OfType<Norator>().FirstOrDefault();
+        }
+
         public static Elements ToSerializableElements()
         {
             Elements ans = new Elements();
