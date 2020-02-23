@@ -13,6 +13,7 @@ namespace Assets.Scripts
     public class LabeledChainElement : ChainElement
     {
         public Text label;
+        public string labelStr;
         public LabeledChainElement(Vector3Int position, int angle) : base(position, angle)
         {
             this.AddLabel("Элемент цепи", position);
@@ -20,6 +21,7 @@ namespace Assets.Scripts
 
         public void AddLabel(string label, Vector3Int position)
         {
+            labelStr = label;
             GameObject labels = GameObject.Find("Labels");
             Text template = labels.GetComponentInChildren<Text>();
             Tilemap tilemap = GameObject.FindObjectOfType<Tilemap>();
@@ -29,6 +31,15 @@ namespace Assets.Scripts
 
             this.label.text = label;
             this.label.enabled = true;
+
+        }
+        
+        public void FixLabel()
+        {
+            if (angle % 180 == 90)
+            {
+                label.transform.Rotate(0, 0, 90);
+            }
         }
 
         public LabeledChainElement(Vector3Int position, int angle, string name) : base(position, angle)

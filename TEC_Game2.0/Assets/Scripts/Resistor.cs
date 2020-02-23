@@ -13,7 +13,15 @@ namespace Assets.Scripts
     {
         public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
-            this.label.text = "Сопротивление";
+            this.label.text = "R";
+        }
+        public new void FixLabel()
+        {
+            this.label.color = Color.black;
+            if (angle % 180 == 90)
+            {
+                label.transform.Rotate(0, 0, 90);
+            }
         }
         public Resistor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {
