@@ -50,6 +50,7 @@ namespace Assets.Scripts
         public void SetName(string name)
         {
             this.label.text = name;
+            this.labelStr = name;
         }
     }
 }

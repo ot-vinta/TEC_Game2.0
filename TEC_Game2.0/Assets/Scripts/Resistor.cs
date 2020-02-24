@@ -13,7 +13,7 @@ namespace Assets.Scripts
     {
         public Resistor(Vector3Int position, int angle) : base(position, angle)
         {
-            this.label.text = "R";
+            this.SetName("R");
         }
         public new void FixLabel()
         {

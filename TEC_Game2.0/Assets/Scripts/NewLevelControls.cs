@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class NewLevelControls : MonoBehaviour
 {
     private GameObject map;
-    private UIInputBox dialog;
+    public UIInputBox dialog;
     private UIChooseBox chooseDialog;
     private string exportPath;
 

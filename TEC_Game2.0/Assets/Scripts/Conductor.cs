@@ -12,7 +12,7 @@ namespace Assets.Scripts
     {
         public Conductor(Vector3Int position, int angle) : base(position, angle)
         {
-            this.label.text = "Con";
+            this.SetName("Con");
             this.label.color = Color.white;
         }
         public new void FixLabel()

@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿using Assets.Scripts;
+using Assets.Models;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -19,21 +21,33 @@ public class Label : MonoBehaviour
 
     private void OnMouseOver()
     {
-        //Debug.Log("Наведён курсор на подпись");
         if (Input.GetMouseButtonDown(1))
         {
-            // For debug
-            Debug.Log("Нажата правая кнопка мыши на подпись");
-            this.gameObject.GetComponent<Text>().text = "Изменено";
+            NewLevelControls scene = FindObjectOfType<NewLevelControls>();
+            UIInputBox dialog = scene.dialog;
+            Text label_text = this.gameObject.GetComponent<Text>();
+            LabeledChainElement element = null;
+            foreach (KeyValuePair<int, ElementBase> elem in Scheme.elements)
+            {
+                if (elem.Value is LabeledChainElement)
+                {
+                    if (((LabeledChainElement)elem.Value).label.gameObject == this.gameObject)
+                    {
+                        element = (LabeledChainElement)elem.Value;
+                    }
+                }
+            }
             /*
-             * UIInputBox dialog = new UIInputBox();
             dialog.SetOnClickListener(message =>
             {
-                dialog.title.text = message;
+                element.SetName(message);
+                dialog.HideDialog();
                 return true;
             });
-            dialog.ShowDialog("Проверка вызова из PlayLevelControls");
+            dialog.ShowDialog("Введите название элемента");
             */
+
+            element.SetName(Random.Range(0,999).ToString());
         }
     }
 }
