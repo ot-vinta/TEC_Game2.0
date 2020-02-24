@@ -48,6 +48,7 @@ public class Label : MonoBehaviour
             {
                 element.SetName(message);
                 dialog.HideDialog();
+                GameObject.Destroy(dialog.dialogCanvas);
                 return true;
             });
             dialog.ShowDialog("Введите название элемента");
