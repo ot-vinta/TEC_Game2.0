@@ -15,7 +15,7 @@ public class NewLevelControls : MonoBehaviour
     void Start()
     {
         map = GameObject.Find("Map");
-        dialog = new UIInputBox();
+        dialog = new UIInputBox(new Vector2(350, 350));
         chooseDialog = new UIChooseBox();
 
         exportPath = Application.persistentDataPath + "/Levels/";

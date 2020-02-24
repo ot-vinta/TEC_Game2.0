@@ -14,7 +14,7 @@ public class PlayLevelControls : MonoBehaviour
     void Start()
     {
         map = GameObject.Find("Map");
-        dialog = new UIInputBox();
+        dialog = new UIInputBox(new Vector2(350, 350));
         dialogList = new UIList();
 
         chooseDialog = new UIChooseBox();

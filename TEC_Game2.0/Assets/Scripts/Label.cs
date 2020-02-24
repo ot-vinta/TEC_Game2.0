@@ -3,6 +3,7 @@ using Assets.Models;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 using UnityEngine.UI;
 
 public class Label : MonoBehaviour
@@ -24,7 +25,6 @@ public class Label : MonoBehaviour
         if (Input.GetMouseButtonDown(1))
         {
             NewLevelControls scene = FindObjectOfType<NewLevelControls>();
-            UIInputBox dialog = scene.dialog;
             Text label_text = this.gameObject.GetComponent<Text>();
             LabeledChainElement element = null;
             foreach (KeyValuePair<int, ElementBase> elem in Scheme.elements)
@@ -37,7 +37,13 @@ public class Label : MonoBehaviour
                     }
                 }
             }
-            /*
+
+            var mapObject = GameObject.Find("Map");
+            Vector2 position = mapObject.GetComponent<Tilemap>().CellToWorld(element.pivotPosition);
+            position = Camera.main.WorldToScreenPoint(position);
+
+            UIInputBox dialog = new UIInputBox(position);
+
             dialog.SetOnClickListener(message =>
             {
                 element.SetName(message);
@@ -45,9 +51,9 @@ public class Label : MonoBehaviour
                 return true;
             });
             dialog.ShowDialog("Введите название элемента");
-            */
+        
 
-            element.SetName(Random.Range(0,999).ToString());
+            //element.SetName(Random.Range(0,999).ToString());
         }
     }
 }
