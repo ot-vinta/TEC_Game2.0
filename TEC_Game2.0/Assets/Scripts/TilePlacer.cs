@@ -41,10 +41,7 @@ public class TilePlacer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Destroy(empty);
-            mapObject.GetComponent<TileEditor>().BackupElement();
-            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
-            mapObject.GetComponent<TilePlacer>().enabled = false;
+            CancelPlacing();
         }
 
         if (!wirePlacing)
@@ -55,6 +52,17 @@ public class TilePlacer : MonoBehaviour
         }
         else 
             PlaceWire();
+    }
+
+    public void CancelPlacing()
+    {
+        if (empty != null)
+        {
+            Destroy(empty);
+            mapObject.GetComponent<TileEditor>().BackupElement();
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+            mapObject.GetComponent<TilePlacer>().enabled = false;
+        }
     }
 
     public void Init(string type, int startAngle, bool isInfinite, string label = null)
