@@ -30,6 +30,13 @@ public class UIList
     */
     public void ShowDialog(string[] elements, string buttonText = "Ok")
     {
+        TileEditor te = GameObject.FindObjectOfType<TileEditor>();
+        te.SetDefault();
+        TilePlacer tp = GameObject.FindObjectOfType<TilePlacer>();
+        tp.CancelPlacing();
+
+
+
         dialogCanvas.SetActive(true);
         scrollRect.content.sizeDelta = new Vector2(0, 17 * elements.Length);
         contentText.rectTransform.sizeDelta = new Vector2(160*4, 16 * 5 * elements.Length);

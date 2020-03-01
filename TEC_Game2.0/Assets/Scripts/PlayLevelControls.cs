@@ -94,7 +94,12 @@ public class PlayLevelControls : MonoBehaviour
         dialog.ShowDialog("Проверка вызова из PlayLevelControls");
     }
 
-    public void RestartPressed() //Надо будет передвинуть
+    public void RestartPressed() 
+    {
+        
+    }
+
+    public void StatisticsPressed() //Пример вызова диалога
     {
         string[] elements = new string[15];
         elements[0] = "Проводимость: 4";
@@ -102,7 +107,7 @@ public class PlayLevelControls : MonoBehaviour
         elements[2] = "Провод: 3";
         elements[3] = "Если";
         elements[4] = "Строк";
-        
+
         elements[5] = "Слишком";
         elements[6] = "Много";
         elements[7] = "То";
@@ -114,10 +119,5 @@ public class PlayLevelControls : MonoBehaviour
         elements[13] = "Как";
         elements[14] = "Сейчас";
         dialogList.ShowDialog(elements);
-    }
-
-    public void StatisticsPressed()
-    {
-        //TO DO
     }
 }
