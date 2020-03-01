@@ -1637,7 +1637,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 25.000004}
+  m_AnchoredPosition: {x: -379, y: 135}
   m_SizeDelta: {x: 221, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &574785012
@@ -2412,7 +2412,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -378.99994, y: 109.99999}
   m_SizeDelta: {x: 221, y: 150}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &792542526
@@ -2655,7 +2655,7 @@ Canvas:
   m_PlaneDistance: 100
   m_PixelPerfect: 0
   m_ReceivesEvents: 1
-  m_OverrideSorting: 0
+  m_OverrideSorting: 1
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_AdditionalShaderChannelsFlag: 0
@@ -2681,8 +2681,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 270.87714, y: 795.95996}
-  m_SizeDelta: {x: 221, y: 150}
+  m_AnchoredPosition: {x: 1255, y: 540}
+  m_SizeDelta: {x: 1041.1, y: 450}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &844931621
 MonoBehaviour:
@@ -2697,7 +2697,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.47058824, g: 0.47058824, b: 0.47058824, a: 0.6509804}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -28655,12 +28655,12 @@ PrefabInstance:
     - target: {fileID: 1982690131031381260, guid: 6e7de2c938a3847409fa174ccbb186be,
         type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: -378.99994
       objectReference: {fileID: 0}
     - target: {fileID: 1982690131031381260, guid: 6e7de2c938a3847409fa174ccbb186be,
         type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -49.2
+      value: 60.79999
       objectReference: {fileID: 0}
     - target: {fileID: 1982690131031381260, guid: 6e7de2c938a3847409fa174ccbb186be,
         type: 3}

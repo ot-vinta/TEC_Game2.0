@@ -51,6 +51,12 @@ namespace Assets.Scripts
         
         public void ShowDialog()
         {
+
+            TileEditor te = GameObject.FindObjectOfType<TileEditor>();
+            te.SetDefault();
+            TilePlacer tp = GameObject.FindObjectOfType<TilePlacer>();
+            tp.CancelPlacing();
+
             List<string> fileNames = GetFilesList();
 
             dialogCanvas.SetActive(true);
