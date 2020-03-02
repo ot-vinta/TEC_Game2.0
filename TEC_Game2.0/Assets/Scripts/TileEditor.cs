@@ -208,6 +208,12 @@ public class TileEditor : MonoBehaviour
         if (backupElement != null)
         {
             Scheme.AddElement(backupElement);
+            var angle = backupElement.angle;
+            Quaternion rotation = Quaternion.Euler(0, 0, angle);
+            var m = backupTile.transform;
+
+            m.SetTRS(Vector3.zero, rotation, Vector3.one);
+            backupTile.transform = m;
             map.SetTile(backupPos, backupTile);
             SetMove();
         }
