@@ -182,6 +182,7 @@ public class TilePlacer : MonoBehaviour
                     if (!String.IsNullOrEmpty(this.label))
                     {
                         newRes.SetName(this.label);
+                        newRes.FixLabel();
                         this.label = null;
                     }
                     AddElementToScheme(newRes);
@@ -191,6 +192,7 @@ public class TilePlacer : MonoBehaviour
                     if (!String.IsNullOrEmpty(this.label))
                     {
                         newCon.SetName(this.label);
+                        newCon.FixLabel();
                         this.label = null;
                     }
                     AddElementToScheme(newCon);
