@@ -15,13 +15,20 @@ namespace Assets.Scripts
         {
             this.SetName("R");
         }
+        public new void AddLabel(string label, Vector3Int position)
+        {
+            base.AddLabel(label, position);
+            this.FixLabel();
+        }
+        public new void SetName(string name)
+        {
+            base.SetName(name);
+            this.FixLabel();
+        }
         public new void FixLabel()
         {
+            base.FixLabel();
             this.label.color = Color.black;
-            if (angle % 180 == 90)
-            {
-                label.transform.Rotate(0, 0, 90);
-            }
         }
         public Resistor(Vector3Int position, int angle, string name) : base(position, angle, name)
         {

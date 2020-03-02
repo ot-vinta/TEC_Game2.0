@@ -242,6 +242,14 @@ public class TileEditor : MonoBehaviour
             if (backupElement is LabeledChainElement)
             {
                 ((LabeledChainElement)backupElement).AddLabel(backupString, backupElement.pivotPosition);
+                if (backupElement is Conductor)
+                {
+                    ((Conductor)backupElement).FixLabel();
+                }
+                else
+                {
+                    ((LabeledChainElement)backupElement).FixLabel();
+                }
             }
             Scheme.AddElement(backupElement);
             map.SetTile(backupPos, backupTile);

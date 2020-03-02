@@ -31,14 +31,13 @@ namespace Assets.Scripts
 
             this.label.text = label;
             this.label.enabled = true;
-
         }
         
         public void FixLabel()
         {
-            if (angle % 180 == 90)
+            if (angle % 180 != label.transform.eulerAngles.z % 180)
             {
-                label.transform.Rotate(0, 0, 90);
+                label.transform.Rotate(0, 0, (angle - label.transform.eulerAngles.z) % 180);
             }
         }
 
