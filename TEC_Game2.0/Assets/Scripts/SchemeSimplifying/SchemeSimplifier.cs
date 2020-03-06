@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts.SchemeSimplifying
@@ -9,20 +10,20 @@ namespace Assets.Scripts.SchemeSimplifying
     {
         private Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> _connectionGraph;
         private Dictionary<ElementBase, int> _elementsToDelete;
-        private Dictionary<TreeElement, List<TreeElement>> _vertexTree;
-        private List<Vector2Int> _nullorVertices;
-        private List<TreeElement> _verticesToDelete;
-
-        private Dictionary<TreeElement, TreeElement> _connectedVerticesWithoutWires;
+        private Dictionary<Vector2Int, bool> _markedVertices;
+        private Dictionary<Vector2Int, Vector2Int> _vertexTree;
+        private Dictionary<Vector2Int, int> _rootConnectionsCount;
+        private Dictionary<Vector2Int, ElementBase> _nullorVertices;
 
         public SchemeSimplifier(Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> connectionGraph)
         {
             _connectionGraph = connectionGraph;
             _elementsToDelete = new Dictionary<ElementBase, int>();
-            _vertexTree = new Dictionary<TreeElement, List<TreeElement>>();
-            _nullorVertices = new List<Vector2Int>();
+            _vertexTree = new Dictionary<Vector2Int, Vector2Int>();
+            _rootConnectionsCount = new Dictionary<Vector2Int, int>();
+            _nullorVertices = new Dictionary<Vector2Int, ElementBase>();
 
-            _connectedVerticesWithoutWires = new Dictionary<TreeElement, TreeElement>();
+            InitMarkedVertices();
         }
 
         public Dictionary<int, List<ElementBase>> Simplify()
@@ -44,256 +45,262 @@ namespace Assets.Scripts.SchemeSimplifying
 
         private Dictionary<ElementBase, int> GetElementsToDelete()
         {
-            var result = new Dictionary<ElementBase, int>();
+            var deleteResult = new Dictionary<ElementBase, int>();
 
-            MakeVertexTree();
+            var notMarkedCount = _markedVertices.Count - 4;
 
-            var verticesInIteration = new List<TreeElement>();
-            var verticesInNextIteration = new List<TreeElement>();
-            var list = _vertexTree.Keys.ToList();
-            for (var i = 2; i < 6; i++)
+            MarkNullorVertices();
+
+            var verticesInIteration = new List<Vector2Int>(_nullorVertices.Keys);
+            var deleteStep = 0;
+            var someValue = 10;
+
+            do
             {
-                verticesInIteration.Add(list[i]);
-            }
+                if (notMarkedCount == 0)
+                    someValue--;
 
-            _verticesToDelete = new List<TreeElement>();
+                var verticesInNextIteration = new List<Vector2Int>();
+                var graphElementsToDelete = new Dictionary<Vector2Int, Vector2Int>();
 
-            while (verticesInIteration.Count > 0)
-            {
                 foreach (var rootVertex in verticesInIteration)
                 {
-                    foreach (var connectedVertex in _vertexTree[rootVertex])
+                    var isNextDeleteStep = false;
+
+                    var isDeleteVertex = false;
+
+                    foreach (var connectedVertex in _connectionGraph[rootVertex].Keys)
                     {
-                        var element = connectedVertex.ElementToRoot;
+                        var element = _connectionGraph[rootVertex][connectedVertex];
 
-                        if (element is Resistor &&
-                            _vertexTree[rootVertex].Count == 1)
+                        switch (element)
                         {
-                            if (!_elementsToDelete.ContainsKey(element))
-                                _elementsToDelete.Add(element, GetTime(connectedVertex, element));
-
-                            if (!verticesInNextIteration.Contains(connectedVertex))
-                                verticesInNextIteration.Add(connectedVertex);
-                        }
-                        else if (element is Conductor)
-                        {
-                            var secondConductorVertex = connectedVertex.Root;
-                            if (VertexTreeHasSecondVertex(secondConductorVertex, connectedVertex))
+                            case Wire _:
                             {
-                                if (!_elementsToDelete.ContainsKey(element))
-                                    _elementsToDelete.Add(element, Math.Max(GetTime(connectedVertex, element), 
-                                                                        GetTime(secondConductorVertex, element)));
-                                DeleteBranch(secondConductorVertex, connectedVertex);
+                                if (!_markedVertices[connectedVertex])
+                                {
+                                    if (!_vertexTree.ContainsKey(connectedVertex))
+                                    {
+                                        AddToVertexTree(connectedVertex, rootVertex);
+                                        isDeleteVertex = true;
+                                    }
+
+                                    if (!verticesInNextIteration.Contains(connectedVertex))
+                                        verticesInNextIteration.Add(connectedVertex);
+
+                                    notMarkedCount--;
+                                    _markedVertices[connectedVertex] = true;
+                                }
+
+                                break;
                             }
+                            case Resistor _:
+                            {
+                                if (!_vertexTree.ContainsKey(connectedVertex))
+                                {
+                                    AddToVertexTree(connectedVertex, rootVertex);
+                                    isDeleteVertex = true;
+                                }
+
+                                if (_rootConnectionsCount[_vertexTree[connectedVertex]] == 1)
+                                {
+                                    if (!deleteResult.ContainsKey(element))
+                                        deleteResult.Add(element, deleteStep);
+                                    isNextDeleteStep = true;
+
+                                    _rootConnectionsCount[_vertexTree[connectedVertex]]--;
+
+                                    if (!verticesInNextIteration.Contains(connectedVertex) && !_markedVertices[connectedVertex])
+                                        verticesInNextIteration.Add(connectedVertex);
+
+                                    if (!_markedVertices[connectedVertex])
+                                        notMarkedCount--;
+                                    _markedVertices[connectedVertex] = true;
+                                }
+                                else verticesInNextIteration.Add(rootVertex);
+                                break;
+                            }
+                            case Conductor _:
+                                if (_vertexTree.ContainsKey(connectedVertex) &&
+                                    !_vertexTree[connectedVertex].Equals(_vertexTree[rootVertex]) &&
+                                    HasSameRoot(connectedVertex, rootVertex))
+                                {
+                                    graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
+                                    var temp = GetFromGraph(graphElementsToDelete, deleteStep);
+                                    foreach (var pair in temp)
+                                    {
+                                        deleteResult.Add(pair.Key, pair.Value);
+                                    }
+
+                                    isNextDeleteStep = true;
+
+                                    _rootConnectionsCount[_vertexTree[connectedVertex]]--;
+                                    _rootConnectionsCount[_vertexTree[rootVertex]]--;
+
+                                    _vertexTree.Remove(connectedVertex);
+                                    _vertexTree.Remove(rootVertex);
+                                }
+                                break;
                         }
-
-
                     }
+
+                    if (isNextDeleteStep)
+                        deleteStep++;
+
+                    if (!isDeleteVertex) continue;
+                    if (!_vertexTree.ContainsKey(rootVertex)) continue;
+                    _rootConnectionsCount[_vertexTree[rootVertex]]--;
+                    _vertexTree.Remove(rootVertex);
                 }
 
-                verticesInIteration = new List<TreeElement>(verticesInNextIteration);
-                verticesInNextIteration.Clear();
+                verticesInIteration = verticesInNextIteration;
+            } while (notMarkedCount > 0 && verticesInIteration.Count > 0 || someValue > 0);
+
+            return deleteResult;
+        }
+
+        private Dictionary<ElementBase, int> GetFromGraph(Dictionary<Vector2Int, Vector2Int> graphElementsToDelete, int deleteStep)
+        {
+            var result = new Dictionary<ElementBase, int>();
+
+            foreach (var pair in graphElementsToDelete.Where(pair => !result.ContainsKey(_connectionGraph[pair.Key][pair.Value])))
+            {
+                result.Add(_connectionGraph[pair.Key][pair.Value], deleteStep);
             }
 
             return result;
         }
 
-        private void DeleteBranch(TreeElement secondConductorVertex, TreeElement firstConductorVertex)
+        private Dictionary<Vector2Int, Vector2Int> RemoveFromGraph(Vector2Int connectedVertex, Vector2Int rootVertex)
         {
-            var deleteResult = new List<TreeElement>();
-
-            deleteResult.Add(secondConductorVertex);
-            deleteResult.Add(firstConductorVertex);
-
-            
-        }
-
-        private bool VertexTreeHasSecondVertex(TreeElement secondConductorVertex, TreeElement firstConductorVertex)
-        {
-            return _vertexTree.Keys.Any(vertex => vertex.Position.Equals(secondConductorVertex.Position) && HasSameRoot(secondConductorVertex, firstConductorVertex));
-        }
-
-        private static bool HasSameRoot(TreeElement secondConductorVertex, TreeElement firstConductorVertex)
-        {
-            while (firstConductorVertex.Root != null)
+            var result = new Dictionary<Vector2Int, Vector2Int>
             {
-                firstConductorVertex = firstConductorVertex.Root;
-            }
+                {connectedVertex, rootVertex}, {rootVertex, connectedVertex}
+            };
 
-            var root = firstConductorVertex;
+            var rootPrev = connectedVertex;
+            var connectedPrev = rootVertex;
 
-            while (secondConductorVertex.Root != null)
+            var isEnd = false;
+
+            while (!isEnd)
             {
-                secondConductorVertex = secondConductorVertex.Root;
-            }
-
-            return root.Position.Equals(secondConductorVertex.Position);
-        }
-
-
-        /*
-            TODO This method should return the time, when element will be deleted(for delete animation)
-            For now it's just returns position of element in vertexTree
-        */
-        private static int GetTime(TreeElement vertex, ElementBase element)
-        {
-            var resultTime = 0;
-
-            while (vertex.Root != null)
-            {
-                vertex = vertex.Root;
-                resultTime++;
-            }
-
-            return resultTime;
-        }
-
-        private void MakeVertexTree()
-        {
-            _vertexTree.Clear();
-            _nullorVertices.Clear();
-
-            DoNextIteration(InitFirstVertices());
-        }
-
-        private void DoNextIteration(List<TreeElement> verticesInIteration)
-        {
-            if (verticesInIteration.Count <= 0) return;
-
-            var verticesInNextIteration = new List<TreeElement>();
-
-            foreach (var rootVertex in verticesInIteration)
-            {
-                foreach (var connectedVertex in _connectionGraph[rootVertex.Position].Keys)
+                foreach (var vertex in _connectionGraph.Keys)
                 {
-                    if (_nullorVertices.Contains(connectedVertex) ||
-                        rootVertex.Root.Position.Equals(connectedVertex)) continue;
-
-                    var newElement = new TreeElement(connectedVertex, rootVertex, _connectionGraph[connectedVertex][rootVertex.Position]);
-                    if (_vertexTree.ContainsKey(newElement) && _vertexTree[newElement].Contains(rootVertex))
-                        continue;
-
-                    List<TreeElement> elementsWithSamePosition;
-
-                    //Skip wires. It's useless
-                    if (_connectionGraph[rootVertex.Position][connectedVertex] is Wire)
+                    if (_connectionGraph[vertex].ContainsKey(connectedVertex) && 
+                        !vertex.Equals(connectedPrev)                         &&
+                        _connectionGraph[vertex].Count == 2)
                     {
-                        if (_connectedVerticesWithoutWires.ContainsKey(rootVertex))
-                        {
-                            var temp = _connectedVerticesWithoutWires[rootVertex];
-                            _connectedVerticesWithoutWires.Add(newElement, temp);
-                        }
-                        else
-                        {
-                            _connectedVerticesWithoutWires.Add(newElement, rootVertex);
-                        }
+                        result.Add(connectedVertex, vertex);
+                        result.Add(vertex, connectedVertex);
 
-                        elementsWithSamePosition = _vertexTree.Keys.Where(element => element.Position.Equals(newElement.Position) && !Equals(element, newElement)).ToList();
-                        elementsWithSamePosition.Add(newElement);
-
-                        if (!HasOneRoot(elementsWithSamePosition))
-                        {
-                            verticesInNextIteration.Add(newElement);
-                        }
-                        
-                        continue;
+                        connectedPrev = connectedVertex;
+                        connectedVertex = vertex;
                     }
-
-                    if (_connectedVerticesWithoutWires.ContainsKey(rootVertex))
+                    else if (_connectionGraph[vertex].ContainsKey(connectedVertex) &&
+                             !vertex.Equals(connectedPrev) &&
+                             _connectionGraph[vertex].Count > 2)
                     {
-                        if (!_vertexTree.ContainsKey(_connectedVerticesWithoutWires[rootVertex]))
-                        {
-                            _vertexTree.Add(_connectedVerticesWithoutWires[rootVertex], new List<TreeElement>());
+                        if (!result.ContainsKey(connectedVertex))
+                            result.Add(connectedVertex, vertex);
+                        if (!result.ContainsKey(vertex))
+                            result.Add(vertex, connectedVertex);
 
-                        }
-
-                        _vertexTree[_connectedVerticesWithoutWires[rootVertex]].Add(newElement);
-                        _vertexTree.Add(newElement, new List<TreeElement>());
-
-                    }
-                    else
-                    {
-                        _vertexTree[rootVertex].Add(newElement);
-                        _vertexTree.Add(newElement, new List<TreeElement>());
-                    }
-
-                    elementsWithSamePosition = _vertexTree.Keys.Where(element => element.Position.Equals(newElement.Position) && !Equals(element, newElement)).ToList();
-                    elementsWithSamePosition.Add(newElement);
-
-                    if (!HasOneRoot(elementsWithSamePosition))
-                    {
-                        verticesInNextIteration.Add(newElement);
+                        isEnd = true;
                     }
                 }
             }
 
-            DoNextIteration(verticesInNextIteration);
-        }
-
-        private List<TreeElement> InitFirstVertices()
-        {
-            var result = new List<TreeElement>();
-
-            var list = new List<Vector2Int>(_connectionGraph.Keys);
-
-            var nullor = Scheme.GetNullorElementsList();
-
-            var nullatorRoot = new TreeElement((Vector2Int)Scheme.GetNullator().pivotPosition, null, Scheme.GetNullator());
-            var noratorRoot = new TreeElement((Vector2Int)Scheme.GetNorator().pivotPosition, null, Scheme.GetNorator());
-
-            _vertexTree.Add(nullatorRoot, new List<TreeElement>());
-            _vertexTree.Add(noratorRoot, new List<TreeElement>());
-
-            for (var i = 0; i < 4; i++)
+            isEnd = false;
+            while (!isEnd)
             {
-                if (nullor[i / 2] is Nullator)
+                foreach (var vertex in _connectionGraph.Keys)
                 {
-                    var newElement = new TreeElement(list[i], nullatorRoot, nullatorRoot.ElementToRoot);
+                    if (_connectionGraph[vertex].ContainsKey(rootVertex) && 
+                        !vertex.Equals(rootPrev)                         &&
+                        _connectionGraph[vertex].Count == 2)
+                    {
+                        result.Add(rootVertex, vertex);
+                        result.Add(vertex, rootVertex);
 
-                    _vertexTree.Add(newElement, new List<TreeElement>());
-                    _vertexTree[nullatorRoot].Add(newElement);
+                        rootPrev = rootVertex;
+                        rootVertex = vertex;
+                    }
+                    else if (_connectionGraph[vertex].ContainsKey(rootVertex) &&
+                             !vertex.Equals(rootPrev) &&
+                             _connectionGraph[vertex].Count > 2)
+                    {
+                        if (!result.ContainsKey(rootVertex))
+                            result.Add(rootVertex, vertex);
+                        if (!result.ContainsKey(vertex))
+                            result.Add(vertex, rootVertex);
 
-                    result.Add(newElement);
+                        isEnd = true;
+                    }
                 }
-                else
-                {
-                    var newElement = new TreeElement(list[i], noratorRoot, noratorRoot.ElementToRoot);
-
-                    _vertexTree.Add(newElement, new List<TreeElement>());
-                    _vertexTree[noratorRoot].Add(newElement);
-
-                    result.Add(newElement);
-                }
-                _nullorVertices.Add(list[i]);
             }
 
             return result;
         }
 
-        private static bool HasOneRoot(List<TreeElement> elements)
+        private bool HasSameRoot(Vector2Int connectedVertex, Vector2Int rootVertex)
         {
-            var elementsWay = new List<TreeElement>();
-            var element = elements[elements.Count - 1];
-            elements.Remove(element);
+            var root1 = _vertexTree[connectedVertex];
+            var root2 = _vertexTree[rootVertex];
 
-            while (element.Root != null)
+            return _nullorVertices[root1] == _nullorVertices[root2];
+        }
+
+        private void AddToVertexTree(Vector2Int connectedVertex, Vector2Int rootVertex)
+        {
+            if (_vertexTree.ContainsKey(rootVertex))
             {
-                elementsWay.Add(element.Root);
-                element = element.Root;
+                _vertexTree.Add(connectedVertex, _vertexTree[rootVertex]);
+                _rootConnectionsCount[_vertexTree[rootVertex]]++;
             }
-
-            foreach (var elem in elements)
+            else
             {
-                var temp = elem;
-                while (temp.Root != null)
-                {
-                    if (elementsWay.Contains(temp.Root))
-                        return true;
-                    temp = temp.Root;
-                }
+                _vertexTree.Add(connectedVertex, rootVertex);
+                _rootConnectionsCount[rootVertex]++;
             }
+        }
 
-            return false;
+        private void MarkNullorVertices()
+        {
+            var nullator = Scheme.GetNullator();
+            var norator = Scheme.GetNorator();
+
+            var nullatorLeftVertex = ConnectionsMaker.GetConnectPosition(true, nullator);
+            var nullatorRightVertex = ConnectionsMaker.GetConnectPosition(false, nullator);
+
+            var noratorLeftVertex = ConnectionsMaker.GetConnectPosition(true, norator);
+            var noratorRightVertex = ConnectionsMaker.GetConnectPosition(false, norator);
+
+            _nullorVertices.Add(nullatorLeftVertex, nullator);
+            _nullorVertices.Add(nullatorRightVertex, nullator);
+            _nullorVertices.Add(noratorLeftVertex, norator);
+            _nullorVertices.Add(noratorRightVertex, norator);
+
+            _markedVertices[nullatorLeftVertex] = true;
+            _markedVertices[nullatorRightVertex] = true;
+            _markedVertices[noratorLeftVertex] = true;
+            _markedVertices[noratorRightVertex] = true;
+
+            _rootConnectionsCount.Add(nullatorLeftVertex, 0);
+            _rootConnectionsCount.Add(nullatorRightVertex, 0);
+            _rootConnectionsCount.Add(noratorLeftVertex, 0);
+            _rootConnectionsCount.Add(noratorRightVertex, 0);
+        }
+
+
+        private void InitMarkedVertices()
+        {
+            _markedVertices = new Dictionary<Vector2Int, bool>();
+
+            foreach (var vertex in _connectionGraph.Keys)
+            {
+                _markedVertices.Add(vertex, false);
+            }
         }
     }
 }
