@@ -61,7 +61,6 @@ namespace Assets.Scripts.SchemeSimplifying
                     someValue--;
 
                 var verticesInNextIteration = new List<Vector2Int>();
-                var graphElementsToDelete = new Dictionary<Vector2Int, Vector2Int>();
 
                 foreach (var rootVertex in verticesInIteration)
                 {
@@ -81,8 +80,7 @@ namespace Assets.Scripts.SchemeSimplifying
                                 {
                                     if (!_vertexTree.ContainsKey(connectedVertex))
                                     {
-                                        AddToVertexTree(connectedVertex, rootVertex);
-                                        isDeleteVertex = true;
+                                        isDeleteVertex = AddToVertexTree(connectedVertex, rootVertex);
                                     }
 
                                     if (!verticesInNextIteration.Contains(connectedVertex))
@@ -98,11 +96,10 @@ namespace Assets.Scripts.SchemeSimplifying
                             {
                                 if (!_vertexTree.ContainsKey(connectedVertex))
                                 {
-                                    AddToVertexTree(connectedVertex, rootVertex);
-                                    isDeleteVertex = true;
+                                    isDeleteVertex = AddToVertexTree(connectedVertex, rootVertex);
                                 }
 
-                                if (_rootConnectionsCount[_vertexTree[connectedVertex]] == 1)
+                                if (_connectionGraph[rootVertex].Count == 2)
                                 {
                                     if (!deleteResult.ContainsKey(element))
                                         deleteResult.Add(element, deleteStep);
@@ -125,7 +122,7 @@ namespace Assets.Scripts.SchemeSimplifying
                                     !_vertexTree[connectedVertex].Equals(_vertexTree[rootVertex]) &&
                                     HasSameRoot(connectedVertex, rootVertex))
                                 {
-                                    graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
+                                    var graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
                                     var temp = GetFromGraph(graphElementsToDelete, deleteStep);
                                     foreach (var pair in temp)
                                     {
@@ -134,11 +131,17 @@ namespace Assets.Scripts.SchemeSimplifying
 
                                     isNextDeleteStep = true;
 
-                                    _rootConnectionsCount[_vertexTree[connectedVertex]]--;
-                                    _rootConnectionsCount[_vertexTree[rootVertex]]--;
+                                    if (_connectionGraph[connectedVertex].Count == 2)
+                                    {
+                                        _rootConnectionsCount[_vertexTree[connectedVertex]]--;
+                                        _vertexTree.Remove(connectedVertex);
+                                    }
 
-                                    _vertexTree.Remove(connectedVertex);
-                                    _vertexTree.Remove(rootVertex);
+                                    if (_connectionGraph[rootVertex].Count == 2)
+                                    {
+                                        _rootConnectionsCount[_vertexTree[rootVertex]]--;
+                                        _vertexTree.Remove(rootVertex);
+                                    }
                                 }
                                 break;
                         }
@@ -181,61 +184,66 @@ namespace Assets.Scripts.SchemeSimplifying
             var rootPrev = connectedVertex;
             var connectedPrev = rootVertex;
 
-            var isEnd = false;
-
-            while (!isEnd)
+            if (_connectionGraph[connectedVertex].Count == 2)
             {
-                foreach (var vertex in _connectionGraph.Keys)
+                var isEnd = false;
+                while (!isEnd)
                 {
-                    if (_connectionGraph[vertex].ContainsKey(connectedVertex) && 
-                        !vertex.Equals(connectedPrev)                         &&
-                        _connectionGraph[vertex].Count == 2)
+                    foreach (var vertex in _connectionGraph.Keys)
                     {
-                        result.Add(connectedVertex, vertex);
-                        result.Add(vertex, connectedVertex);
-
-                        connectedPrev = connectedVertex;
-                        connectedVertex = vertex;
-                    }
-                    else if (_connectionGraph[vertex].ContainsKey(connectedVertex) &&
-                             !vertex.Equals(connectedPrev) &&
-                             _connectionGraph[vertex].Count > 2)
-                    {
-                        if (!result.ContainsKey(connectedVertex))
+                        if (_connectionGraph[vertex].ContainsKey(connectedVertex) &&
+                            !vertex.Equals(connectedPrev) &&
+                            _connectionGraph[vertex].Count == 2)
+                        {
                             result.Add(connectedVertex, vertex);
-                        if (!result.ContainsKey(vertex))
                             result.Add(vertex, connectedVertex);
 
-                        isEnd = true;
+                            connectedPrev = connectedVertex;
+                            connectedVertex = vertex;
+                        }
+                        else if (_connectionGraph[vertex].ContainsKey(connectedVertex) &&
+                                 !vertex.Equals(connectedPrev) &&
+                                 _connectionGraph[vertex].Count > 2)
+                        {
+                            if (!result.ContainsKey(connectedVertex))
+                                result.Add(connectedVertex, vertex);
+                            if (!result.ContainsKey(vertex))
+                                result.Add(vertex, connectedVertex);
+
+                            isEnd = true;
+                        }
                     }
                 }
             }
 
-            isEnd = false;
-            while (!isEnd)
+            if (_connectionGraph[rootVertex].Count == 2)
             {
-                foreach (var vertex in _connectionGraph.Keys)
+                var isEnd = false;
+                while (!isEnd)
                 {
-                    if (_connectionGraph[vertex].ContainsKey(rootVertex) && 
-                        !vertex.Equals(rootPrev)                         &&
-                        _connectionGraph[vertex].Count == 2)
+                    foreach (var vertex in _connectionGraph.Keys)
                     {
-                        result.Add(rootVertex, vertex);
-                        result.Add(vertex, rootVertex);
-
-                        rootPrev = rootVertex;
-                        rootVertex = vertex;
-                    }
-                    else if (_connectionGraph[vertex].ContainsKey(rootVertex) &&
-                             !vertex.Equals(rootPrev) &&
-                             _connectionGraph[vertex].Count > 2)
-                    {
-                        if (!result.ContainsKey(rootVertex))
+                        if (_connectionGraph[vertex].ContainsKey(rootVertex) &&
+                            !vertex.Equals(rootPrev) &&
+                            _connectionGraph[vertex].Count == 2)
+                        {
                             result.Add(rootVertex, vertex);
-                        if (!result.ContainsKey(vertex))
                             result.Add(vertex, rootVertex);
 
-                        isEnd = true;
+                            rootPrev = rootVertex;
+                            rootVertex = vertex;
+                        }
+                        else if (_connectionGraph[vertex].ContainsKey(rootVertex) &&
+                                 !vertex.Equals(rootPrev) &&
+                                 _connectionGraph[vertex].Count > 2)
+                        {
+                            if (!result.ContainsKey(rootVertex))
+                                result.Add(rootVertex, vertex);
+                            if (!result.ContainsKey(vertex))
+                                result.Add(vertex, rootVertex);
+
+                            isEnd = true;
+                        }
                     }
                 }
             }
@@ -251,18 +259,18 @@ namespace Assets.Scripts.SchemeSimplifying
             return _nullorVertices[root1] == _nullorVertices[root2];
         }
 
-        private void AddToVertexTree(Vector2Int connectedVertex, Vector2Int rootVertex)
+        private bool AddToVertexTree(Vector2Int connectedVertex, Vector2Int rootVertex)
         {
             if (_vertexTree.ContainsKey(rootVertex))
             {
                 _vertexTree.Add(connectedVertex, _vertexTree[rootVertex]);
                 _rootConnectionsCount[_vertexTree[rootVertex]]++;
+                return true;
             }
-            else
-            {
-                _vertexTree.Add(connectedVertex, rootVertex);
-                _rootConnectionsCount[rootVertex]++;
-            }
+
+            _vertexTree.Add(connectedVertex, rootVertex);
+            _rootConnectionsCount[rootVertex]++;
+            return false;
         }
 
         private void MarkNullorVertices()
