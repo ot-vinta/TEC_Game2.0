@@ -100,7 +100,7 @@ namespace Assets.Scripts.SchemeSimplifying
                                     isDeleteVertex = AddToVertexTree(connectedVertex, rootVertex);
                                 }
 
-                                if (_connectionGraph[rootVertex].Count == 2)
+                                if (_connectionGraph[rootVertex].Count == 2 && _rootConnectionsCount[_vertexTree[connectedVertex]] == 1)
                                 {
                                     if (!deleteResult.ContainsKey(element))
                                         deleteResult.Add(element, deleteStep);
@@ -125,7 +125,8 @@ namespace Assets.Scripts.SchemeSimplifying
                                 {
                                     graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
                                     var temp = GetFromGraph(graphElementsToDelete, deleteStep);
-                                    foreach (var pair in temp)
+
+                                    foreach (var pair in temp.Where(pair => !deleteResult.ContainsKey(pair.Key)))
                                     {
                                         deleteResult.Add(pair.Key, pair.Value);
                                     }
@@ -203,8 +204,10 @@ namespace Assets.Scripts.SchemeSimplifying
                             !vertex.Equals(connectedPrev) &&
                             _connectionGraph[vertex].Count == 2)
                         {
-                            result.Add(connectedVertex, vertex);
-                            result.Add(vertex, connectedVertex);
+                            if (!result.ContainsKey(connectedVertex))
+                                result.Add(connectedVertex, vertex);
+                            if (!result.ContainsKey(vertex))
+                                result.Add(vertex, connectedVertex);
 
                             connectedPrev = connectedVertex;
                             connectedVertex = vertex;
@@ -235,8 +238,10 @@ namespace Assets.Scripts.SchemeSimplifying
                             !vertex.Equals(rootPrev) &&
                             _connectionGraph[vertex].Count == 2)
                         {
-                            result.Add(rootVertex, vertex);
-                            result.Add(vertex, rootVertex);
+                            if (!result.ContainsKey(rootVertex))
+                                result.Add(rootVertex, vertex);
+                            if (!result.ContainsKey(vertex))
+                                result.Add(vertex, rootVertex);
 
                             rootPrev = rootVertex;
                             rootVertex = vertex;
