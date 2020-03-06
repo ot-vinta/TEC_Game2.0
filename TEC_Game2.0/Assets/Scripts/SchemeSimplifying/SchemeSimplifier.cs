@@ -53,18 +53,19 @@ namespace Assets.Scripts.SchemeSimplifying
 
             var verticesInIteration = new List<Vector2Int>(_nullorVertices.Keys);
             var deleteStep = 0;
-            var someValue = 10;
+            var someValue = _connectionGraph.Count;
 
             do
             {
-                if (notMarkedCount == 0)
-                    someValue--;
+                someValue--;
 
                 var verticesInNextIteration = new List<Vector2Int>();
 
                 foreach (var rootVertex in verticesInIteration)
                 {
                     var isNextDeleteStep = false;
+
+                    var graphElementsToDelete = new Dictionary<Vector2Int, Vector2Int>();
 
                     var isDeleteVertex = false;
 
@@ -122,7 +123,7 @@ namespace Assets.Scripts.SchemeSimplifying
                                     !_vertexTree[connectedVertex].Equals(_vertexTree[rootVertex]) &&
                                     HasSameRoot(connectedVertex, rootVertex))
                                 {
-                                    var graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
+                                    graphElementsToDelete = RemoveFromGraph(connectedVertex, rootVertex);
                                     var temp = GetFromGraph(graphElementsToDelete, deleteStep);
                                     foreach (var pair in temp)
                                     {
@@ -143,8 +144,15 @@ namespace Assets.Scripts.SchemeSimplifying
                                         _vertexTree.Remove(rootVertex);
                                     }
                                 }
+                                else verticesInNextIteration.Add(rootVertex);
                                 break;
                         }
+                    }
+
+                    foreach (var pair in graphElementsToDelete)
+                    {
+                        _connectionGraph[pair.Key].Remove(pair.Value);
+                        _connectionGraph[pair.Value].Remove(pair.Key);
                     }
 
                     if (isNextDeleteStep)
@@ -157,7 +165,7 @@ namespace Assets.Scripts.SchemeSimplifying
                 }
 
                 verticesInIteration = verticesInNextIteration;
-            } while (notMarkedCount > 0 && verticesInIteration.Count > 0 || someValue > 0);
+            } while (notMarkedCount > 0 && verticesInIteration.Count > 0 && someValue > 0);
 
             return deleteResult;
         }
