@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using Assets.Scripts;
+using Assets.Scripts.SchemeSimplifying;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -115,7 +116,7 @@ public class PlayLevelControls : MonoBehaviour
         else
         {
             SchemeSimplifier simplifier = new SchemeSimplifier(connectionGraph);
-            var elementsToDelete = simplifier.SimplifyAsync();
+            var elementsToDelete = simplifier.Simplify();
 
             foreach (var elementsInOnTiming in elementsToDelete)
             {

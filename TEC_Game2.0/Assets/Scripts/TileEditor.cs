@@ -148,8 +148,6 @@ public class TileEditor : MonoBehaviour
                  wire.pivotPosition.x >= pos.x && wire.secondPosition.x <= pos.x))
             {
                 selectedPos = wire.pivotPosition;
-                Debug.Log(pos);
-                Debug.Log(wire.pivotPosition);
                 return map.GetTile<Tile>(wire.pivotPosition);
             }
         }
