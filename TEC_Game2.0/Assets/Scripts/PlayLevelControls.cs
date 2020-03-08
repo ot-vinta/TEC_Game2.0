@@ -8,6 +8,7 @@ using Assets.Scripts.SchemeSimplifying;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class PlayLevelControls : MonoBehaviour
 {
@@ -121,6 +122,12 @@ public class PlayLevelControls : MonoBehaviour
 
             foreach (var element in elementsToDelete.SelectMany(elementsInOnTiming => elementsInOnTiming.Value))
             {
+                if (element is LabeledChainElement chainElement)
+                {
+                    var label = chainElement.label;
+                    Destroy(label);
+                }
+
                 if (element is Resistor)
                 {
                     ReplaceWithWire(element);
