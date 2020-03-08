@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Assets.Scripts;
 using Assets.Scripts.SchemeSimplifying;
@@ -118,18 +119,14 @@ public class PlayLevelControls : MonoBehaviour
             SchemeSimplifier simplifier = new SchemeSimplifier(connectionGraph);
             var elementsToDelete = simplifier.Simplify();
 
-            foreach (var elementsInOnTiming in elementsToDelete)
+            foreach (var element in elementsToDelete.SelectMany(elementsInOnTiming => elementsInOnTiming.Value))
             {
-                foreach (var element in elementsInOnTiming.Value)
+                if (element is Resistor)
                 {
-                    if (element is Resistor)
-                    {
-                        ReplaceWithWire(element);
-                    }
-                    Scheme.RemoveElement(element);
-                    map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
-                    //Thread.Sleep(300);
+                    ReplaceWithWire(element);
                 }
+                Scheme.RemoveElement(element);
+                map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
             }
         }
     }
@@ -137,28 +134,6 @@ public class PlayLevelControls : MonoBehaviour
     public void RestartPressed() 
     {
         
-    }
-
-    public void StatisticsPressed() //Пример вызова диалога
-    {
-        string[] elements = new string[15];
-        elements[0] = "Проводимость: 4";
-        elements[1] = "Сопротивление: 2";
-        elements[2] = "Провод: 3";
-        elements[3] = "Если";
-        elements[4] = "Строк";
-
-        elements[5] = "Слишком";
-        elements[6] = "Много";
-        elements[7] = "То";
-        elements[8] = "Должен";
-        elements[9] = "Появиться";
-        elements[10] = "Скролл";
-        elements[11] = "Бар";
-        elements[12] = "Вот";
-        elements[13] = "Как";
-        elements[14] = "Сейчас";
-        dialogList.ShowDialog(elements);
     }
 
     public void StatisticsPressed()
