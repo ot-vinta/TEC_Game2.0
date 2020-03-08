@@ -82,6 +82,24 @@ namespace Assets.Scripts
                     )
                 };
 
+            if (element is LabeledChainElement)
+            {
+                //GameObject.Find("Labels").Add //(((LabeledChainElement)element).label);
+                Debug.Log("JsonReader: LabeledChainElement encountered");
+
+                //((LabeledChainElement)element).label.transform.parent = GameObject.Find("Labels").transform;
+                ((LabeledChainElement)element).AddLabel(((LabeledChainElement)element).labelStr, element.pivotPosition);
+                if (element is Resistor)
+                {
+                    ((Resistor)element).FixLabel();
+                }
+                if (element is Conductor)
+                {
+                    ((Conductor)element).FixLabel();
+                }
+
+            }
+
             float scale = 1;
             Quaternion rotation = Quaternion.Euler(0, 0, element.angle);
 

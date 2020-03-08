@@ -12,9 +12,15 @@ public class UIInputBox
 
     Predicate<string> OnClickAction;
 
-    public UIInputBox()
+    public UIInputBox(Vector2 position)
     {
-        dialogCanvas = GameObject.Find("UI_InputBox");
+        TileEditor te = GameObject.FindObjectOfType<TileEditor>();
+        te.SetDefault();
+        TilePlacer tp = GameObject.FindObjectOfType<TilePlacer>();
+        tp.CancelPlacing();
+
+        dialogCanvas = GameObject.Instantiate(Resources.Load("Prefabs/InputBoxPrefab")) as GameObject;
+        dialogCanvas.transform.position = new Vector3(position.x, position.y, 0);
         button = dialogCanvas.GetComponentInChildren<Button>();
         inputField = dialogCanvas.GetComponentInChildren<InputField>();
         title = dialogCanvas.GetComponentInChildren<Text>();

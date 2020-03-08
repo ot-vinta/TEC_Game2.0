@@ -30,6 +30,8 @@ public class TilePlacer : MonoBehaviour
     private bool isInfinite;
     private string type;
 
+    private string label;
+
     private bool wirePlacing;
     private int wireEndsCount;
     private Vector3 wireFirstPosition;
@@ -39,14 +41,12 @@ public class TilePlacer : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Destroy(empty);
-            mapObject.GetComponent<TileEditor>().BackupElement();
-            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
-            mapObject.GetComponent<TilePlacer>().enabled = false;
+            CancelPlacing();
         }
 
         if (!wirePlacing)
         {
+            Debug.Log("TilePlacer.Update, !wirePlacing");
             MoveSprite();
             RotateSprite();
         }
@@ -54,9 +54,23 @@ public class TilePlacer : MonoBehaviour
             PlaceWire();
     }
 
-    public void Init(string type, int startAngle, bool isInfinite)
+    public void CancelPlacing()
+    {
+        if (empty != null)
+        {
+            Destroy(empty);
+            mapObject.GetComponent<TileEditor>().BackupElement();
+            GameObject.Find("MainMenu").GetComponent<Map>().enabled = true;
+            mapObject.GetComponent<TilePlacer>().enabled = false;
+        }
+    }
+
+    public void Init(string type, int startAngle, bool isInfinite, string label = null)
     {
         this.isInfinite = isInfinite;
+        this.label = label;
+        Debug.Log("TilePlacer.Init, this.label is set");
+        //Debug.Log("TilePlacer.Init, this.label is " + label);
         mapObject = GameObject.Find("Map");
         map = mapObject.GetComponent<Tilemap>();
         elementTile = null;
@@ -161,23 +175,32 @@ public class TilePlacer : MonoBehaviour
             if (Scheme.GetElement(new Vector3Int(pos.x, pos.y, 1)) == null)
             {
                 PlaceTile(Vector3.one, 1);
-                switch (type)
-                {
-                    case "Resistor":
-                        AddElementToScheme(new Resistor(new Vector3Int(pos.x, pos.y, 1), (int) angle));
-                        break;
-                    case "Conductor":
-                        AddElementToScheme(new Conductor(new Vector3Int(pos.x, pos.y, 1), (int) angle));
-                        break;
-                    case "Nullator":
-                        AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
-                        isInfinite = false;
-                        break;
-                    case "Norator":
-                        AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
-                        isInfinite = false;
-                        break;
-                }
+                case "Resistor":
+                    Resistor newRes = new Resistor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
+                    if (!String.IsNullOrEmpty(this.label))
+                    {
+                        newRes.SetName(this.label);
+                        newRes.FixLabel();
+                        this.label = null;
+                    }
+                    AddElementToScheme(newRes);
+                    break;
+                case "Conductor":
+                    Conductor newCon = new Conductor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
+                    if (!String.IsNullOrEmpty(this.label))
+                    {
+                        newCon.SetName(this.label);
+                        newCon.FixLabel();
+                        this.label = null;
+                    }
+                    AddElementToScheme(newCon);
+                    break;
+                case "Nullator":
+                    AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
+                case "Norator":
+                    AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
+                    break;
             }
 
             Destroy(empty);

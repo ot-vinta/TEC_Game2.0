@@ -4,6 +4,7 @@ using System.Net;
 using Assets.Scripts;
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using UnityEngine.UI;
 
 public class TileEditor : MonoBehaviour
 {
@@ -15,6 +16,7 @@ public class TileEditor : MonoBehaviour
     private ElementBase backupElement;
     private Vector3Int backupPos;
     private Tile backupTile;
+    private string backupString; 
 
     public const string StatusDelete = "delete";
     public const string StatusRotate = "rotate";
@@ -174,6 +176,12 @@ public class TileEditor : MonoBehaviour
 
     private void DeleteElement(Vector3Int pos)
     {
+        ElementBase elem = Scheme.GetElement(pos);
+        if (elem is LabeledChainElement)
+        {
+            Text label = ((LabeledChainElement)elem).label;
+            Destroy(label);
+        }
         Scheme.RemoveElement(pos);
         map.SetTile(pos, new Tile());
     }
@@ -183,20 +191,44 @@ public class TileEditor : MonoBehaviour
         int angle = Scheme.GetRotation(pos);
         angle += 90 % 360;
         Scheme.RotateElement(pos, angle);
+        ElementBase rotElem = Scheme.GetElement(pos);
+        if (rotElem is LabeledChainElement)
+        {
+            if (angle % 180 == 0)
+            {
+                ((LabeledChainElement)rotElem).label.transform.Rotate(0, 0, -90);
+            }
+            else
+            {
+                ((LabeledChainElement)rotElem).label.transform.Rotate(0, 0, 90);
+            }
+        }
         Quaternion rotation = Quaternion.Euler(0, 0, angle);
         map.SetTransformMatrix(pos, Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
     }
 
     private void MoveElement(Vector3Int pos, Tile tile)
     {
+        backupElement = Scheme.GetElement(pos);
+        string label = null;
+        if (backupElement is LabeledChainElement)
+        {
+            Text labelElem = ((LabeledChainElement)backupElement).label;
+            label = labelElem.text;
+            backupString = label;
+            Destroy(labelElem);
+            //LabeledChainElement added = (LabeledChainElement) Scheme.GetLatestElement();
+            //added.SetName(label);
+        }
         if (GetStatus() != StatusDefault)
             SetDefault();
         mapObject.GetComponent<TilePlacer>().enabled = true;
-        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false);
+        mapObject.GetComponent<TilePlacer>().Init(tile.name, Scheme.GetRotation(pos), false, label);
 
-        backupElement = Scheme.GetElement(pos);
+        
         backupPos = pos;
         backupTile = tile;
+        
 
         DeleteElement(pos);
     }
@@ -205,6 +237,18 @@ public class TileEditor : MonoBehaviour
     {
         if (backupElement != null)
         {
+            if (backupElement is LabeledChainElement)
+            {
+                ((LabeledChainElement)backupElement).AddLabel(backupString, backupElement.pivotPosition);
+                if (backupElement is Conductor)
+                {
+                    ((Conductor)backupElement).FixLabel();
+                }
+                else
+                {
+                    ((LabeledChainElement)backupElement).FixLabel();
+                }
+            }
             Scheme.AddElement(backupElement);
             var angle = backupElement.angle;
             Quaternion rotation = Quaternion.Euler(0, 0, angle);
