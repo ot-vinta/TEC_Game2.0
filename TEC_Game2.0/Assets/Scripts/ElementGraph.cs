@@ -10,7 +10,7 @@ namespace Assets.Scripts
     class ElementGraph
     {
         Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> graph = new Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>>();
-        public void AddElement(Vector2Int end1, Vector2Int end2, ElementBase elem)
+        private void AddElement(Vector2Int end1, Vector2Int end2, ElementBase elem)
         {
 
             Vector2Int toCompare = new Vector2Int(-1,-1), //Vector2Int не может быть null. Приходится выкручиваться
@@ -125,7 +125,7 @@ namespace Assets.Scripts
             }
         }
 
-        public void RemoveElement(Vector2Int end1, Vector2Int end2)
+        private void RemoveElement(Vector2Int end1, Vector2Int end2)
         {
             Vector2Int toCompare = new Vector2Int(-1, -1), //Vector2Int не может быть null. Приходится выкручиваться
                        equalToEnd1 = toCompare,
@@ -188,6 +188,18 @@ namespace Assets.Scripts
                     graph[equalToEnd2][innerEqualToEnd] = null;
                 }
             }
+        }
+        public void AddElement(ElementBase elem)
+        {
+            Vector2Int end1 = ConnectionsMaker.GetConnectPosition(true, elem),
+                       end2 = ConnectionsMaker.GetConnectPosition(false, elem);
+            AddElement(end1, end2, elem);
+        }
+        public void RemoveElement(ElementBase elem)
+        {
+            Vector2Int end1 = ConnectionsMaker.GetConnectPosition(true, elem),
+                       end2 = ConnectionsMaker.GetConnectPosition(false, elem);
+            RemoveElement(end1, end2);
         }
     }
 }
