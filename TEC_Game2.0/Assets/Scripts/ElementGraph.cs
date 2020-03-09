@@ -125,7 +125,7 @@ namespace Assets.Scripts
             }
         }
 
-        private void RemoveElement(Vector2Int end1, Vector2Int end2)
+        public void RemoveElement(Vector2Int end1, Vector2Int end2)
         {
             Vector2Int toCompare = new Vector2Int(-1, -1), //Vector2Int не может быть null. Приходится выкручиваться
                        equalToEnd1 = toCompare,
@@ -191,15 +191,31 @@ namespace Assets.Scripts
         }
         public void AddElement(ElementBase elem)
         {
-            Vector2Int end1 = ConnectionsMaker.GetConnectPosition(true, elem),
-                       end2 = ConnectionsMaker.GetConnectPosition(false, elem);
-            AddElement(end1, end2, elem);
+            if (elem is Wire)
+            {
+                Vector2Int end1 = new Vector2Int(((Wire)elem).pivotPosition.x, ((Wire)elem).pivotPosition.y),
+                           end2 = new Vector2Int(((Wire)elem).secondPosition.x, ((Wire)elem).secondPosition.y);
+                AddElement(end1, end2, elem);
+            }
+            else
+            {
+                Vector2Int end1 = ConnectionsMaker.GetConnectPosition(true, elem),
+                           end2 = ConnectionsMaker.GetConnectPosition(false, elem);
+                AddElement(end1, end2, elem);
+            }
         }
         public void RemoveElement(ElementBase elem)
         {
-            Vector2Int end1 = ConnectionsMaker.GetConnectPosition(true, elem),
-                       end2 = ConnectionsMaker.GetConnectPosition(false, elem);
-            RemoveElement(end1, end2);
+            foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, ElementBase>> keyValuePair in graph)
+            {
+                foreach (KeyValuePair<Vector2Int, ElementBase> innerKeyValuePair in keyValuePair.Value)
+                {
+                    if (innerKeyValuePair.Value == elem)
+                    {
+                        graph[keyValuePair.Key][innerKeyValuePair.Key] = null;
+                    }
+                }
+            }
         }
     }
 }
