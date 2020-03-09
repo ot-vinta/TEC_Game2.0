@@ -109,7 +109,7 @@ public class PlayLevelControls : MonoBehaviour
         var connectionGraph = ConnectionsMaker.MakeConnectionGraph();
         if (connectionGraph.Count == 0 || Scheme.GetNorator() == null || Scheme.GetNullator() == null)
         {
-            string[] alarmShit = new string[3];
+            var alarmShit = new string[3];
             alarmShit[0] = "Схема не связана";
             alarmShit[1] = "или не стоит";
             alarmShit[2] = "нуллатор с норатором!";
@@ -117,10 +117,18 @@ public class PlayLevelControls : MonoBehaviour
         }
         else
         {
-            SchemeSimplifier simplifier = new SchemeSimplifier(connectionGraph);
+            var simplifier = new SchemeSimplifier(connectionGraph);
             var elementsToDelete = simplifier.Simplify();
 
-            foreach (var element in elementsToDelete.SelectMany(elementsInOnTiming => elementsInOnTiming.Value))
+            StartCoroutine(DeleteElements(elementsToDelete));
+        }
+    }
+
+    private IEnumerator DeleteElements(Dictionary<int, List<ElementBase>> elementsToDelete)
+    {
+        foreach (var time in elementsToDelete.Keys)
+        {
+            foreach (var element in elementsToDelete[time])
             {
                 if (element is LabeledChainElement chainElement)
                 {
@@ -135,12 +143,14 @@ public class PlayLevelControls : MonoBehaviour
                 Scheme.RemoveElement(element);
                 map.GetComponent<Tilemap>().SetTile(element.pivotPosition, new Tile());
             }
+
+            yield return new WaitForSeconds(0.6f);
         }
     }
 
-    public void RestartPressed() 
+    public void RestartPressed()
     {
-        
+
     }
 
     public void StatisticsPressed()

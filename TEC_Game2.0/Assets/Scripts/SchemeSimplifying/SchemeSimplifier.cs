@@ -60,12 +60,12 @@ namespace Assets.Scripts.SchemeSimplifying
                 deleteStep++;
 
                 var verticesInNextIteration = new List<Vertex>();
+                var graphElementsToDelete = new List<ElementBase>();
 
                 foreach (var rootVertex in verticesInIteration)
                 {
                     foreach (var connectedVertex in _graph[rootVertex].Keys)
                     {
-                        var graphElementsToDelete = new List<ElementBase>();
 
                         foreach (var element in _graph[rootVertex][connectedVertex])
                         {
@@ -137,11 +137,16 @@ namespace Assets.Scripts.SchemeSimplifying
                                     break;
                             }
                         }
+                    }
+                }
 
-                        foreach (var elementToDelete in graphElementsToDelete)
+                foreach (var elementToDelete in graphElementsToDelete)
+                {
+                    foreach (var root in _graph.Keys)
+                    {
+                        foreach (var connected in _graph[root].Keys.Where(connected => _graph[root][connected].Contains(elementToDelete)))
                         {
-                            _graph[rootVertex][connectedVertex].Remove(elementToDelete);
-                            _graph[connectedVertex][rootVertex].Remove(elementToDelete);
+                            _graph[root][connected].Remove(elementToDelete);
                         }
                     }
                 }
@@ -194,11 +199,30 @@ namespace Assets.Scripts.SchemeSimplifying
             vertex1List.Add(connectedVertex);
             vertex2List.Add(rootVertex);
 
-            return (from vertex1 in vertex1List 
-                    from vertex2 in vertex2List 
-                    where vertex1 != vertex2 && 
-                                      (_connectionsToElement[nullator].Contains(vertex1) && _connectionsToElement[nullator].Contains(vertex2) || 
-                                      _connectionsToElement[norator].Contains(vertex1) && _connectionsToElement[norator].Contains(vertex2)) select vertex1).Any();
+            var result = false;
+            var markedElements = new List<ElementBase>();
+            var count = 0;
+            foreach (var element in from elements in _graph[connectedVertex].Values 
+                                    from element in elements where !markedElements.Contains(element) select element)
+            {
+                markedElements.Add(element);
+                count++;
+            }
+            foreach (var element in from elements in _graph[rootVertex].Values 
+                                    from element in elements where !markedElements.Contains(element) select element)
+            {
+                markedElements.Add(element);
+                count++;
+            }
+
+            if (count > 2)
+                result = true;
+
+            return result && (from vertex1 in vertex1List 
+                              from vertex2 in vertex2List 
+                              where vertex1 != vertex2 && 
+                                    (_connectionsToElement[nullator].Contains(vertex1) && _connectionsToElement[nullator].Contains(vertex2) || 
+                                     _connectionsToElement[norator].Contains(vertex1) && _connectionsToElement[norator].Contains(vertex2)) select vertex1).Any();
         }
 
         private void InitNullorVertices()
@@ -286,21 +310,24 @@ namespace Assets.Scripts.SchemeSimplifying
 
                         foreach (var connectedVertex in _graph.Keys.Where(connectedVertex => connectedVertex.positions.Contains(connected)))
                         {
-                            if (!_graph[vertex].ContainsKey(connectedVertex))
+                            if (connectedVertex != vertex)
                             {
-                                _graph[vertex].Add(connectedVertex,
-                                    new List<ElementBase> {_connectionGraph[pos][connected]});
-                            }
-                            else if(!_graph[vertex][connectedVertex].Contains(_connectionGraph[pos][connected])) 
-                                _graph[vertex][connectedVertex].Add(_connectionGraph[pos][connected]);
+                                if (!_graph[vertex].ContainsKey(connectedVertex))
+                                {
+                                    _graph[vertex].Add(connectedVertex,
+                                        new List<ElementBase> {_connectionGraph[pos][connected]});
+                                }
+                                else if (!_graph[vertex][connectedVertex].Contains(_connectionGraph[pos][connected]))
+                                    _graph[vertex][connectedVertex].Add(_connectionGraph[pos][connected]);
 
-                            if (!_graph[connectedVertex].ContainsKey(vertex))
-                            {
-                                _graph[connectedVertex].Add(vertex,
-                                    new List<ElementBase> { _connectionGraph[pos][connected] });
+                                if (!_graph[connectedVertex].ContainsKey(vertex))
+                                {
+                                    _graph[connectedVertex].Add(vertex,
+                                        new List<ElementBase> {_connectionGraph[pos][connected]});
+                                }
+                                else if (!_graph[connectedVertex][vertex].Contains(_connectionGraph[pos][connected]))
+                                    _graph[connectedVertex][vertex].Add(_connectionGraph[pos][connected]);
                             }
-                            else if (!_graph[connectedVertex][vertex].Contains(_connectionGraph[pos][connected]))
-                                _graph[connectedVertex][vertex].Add(_connectionGraph[pos][connected]);
 
                             if (!_connectionsToElement.ContainsKey(_connectionGraph[pos][connected]))
                                 _connectionsToElement.Add(_connectionGraph[pos][connected], new List<Vertex> { vertex });
@@ -319,9 +346,8 @@ namespace Assets.Scripts.SchemeSimplifying
         {
             _markedVerticesInOldGraph[connected] = true;
 
-            var result = new List<Vector2Int>();
+            var result = new List<Vector2Int> {connected};
 
-            result.Add(connected);
             result.AddRange(_connectionGraph[connected].Keys
                                         .Where(newConnected => !_markedVerticesInOldGraph[newConnected] && 
                                                                _connectionGraph[connected][newConnected] is Wire)
