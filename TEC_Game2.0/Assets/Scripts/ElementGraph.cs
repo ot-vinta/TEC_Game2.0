@@ -85,5 +85,48 @@ namespace Assets.Scripts
                 }
             }
         }
+        public ElementBase GetElement(Vector2Int end1, Vector2Int end2)
+        {
+            Vector2Int toCompare = new Vector2Int(-1, -1), //Vector2Int не может быть null. Приходится выкручиваться
+                      equalToEnd1 = toCompare;
+
+            foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, ElementBase>> keyValuePair in graph)
+            {
+                if (keyValuePair.Key.Equals(end1))
+                {
+                    equalToEnd1 = keyValuePair.Key;
+                }
+            }
+            if (equalToEnd1 == toCompare)
+            {
+                Debug.Log("Такого элемента в графе нет");
+                return null;
+            }
+            else
+            {
+                Vector2Int innerEqualToEnd = toCompare;
+                foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, ElementBase>> keyValuePair in graph)
+                {
+                    if (keyValuePair.Key.Equals(end1))
+                    {
+                        innerEqualToEnd = keyValuePair.Key;
+                    }
+                }
+                if (innerEqualToEnd == toCompare)
+                {
+                    Debug.Log("Такого элемента в графе нет");
+                    return null;
+                }
+                else
+                {
+                    return graph[equalToEnd1][innerEqualToEnd];
+                }
+            }
+        }
+
+        public void RemoveElement(Vector2Int end1, Vector2Int end2)
+        {
+
+        }
     }
 }
