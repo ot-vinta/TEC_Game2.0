@@ -82,6 +82,7 @@ namespace Assets.Scripts
                 else
                 {
                     graph[equalToEnd2][innerEqualToEnd] = elem;
+                    Debug.Log("Элемент с такими координатами уже есть в графе, он был заменён");
                 }
             }
         }
@@ -126,7 +127,67 @@ namespace Assets.Scripts
 
         public void RemoveElement(Vector2Int end1, Vector2Int end2)
         {
-
+            Vector2Int toCompare = new Vector2Int(-1, -1), //Vector2Int не может быть null. Приходится выкручиваться
+                       equalToEnd1 = toCompare,
+                       equalToEnd2 = toCompare;
+            foreach (KeyValuePair<Vector2Int, Dictionary<Vector2Int, ElementBase>> keyValuePair in graph)
+            {
+                if (keyValuePair.Key.Equals(end1))
+                {
+                    equalToEnd1 = keyValuePair.Key;
+                }
+                if (keyValuePair.Key.Equals(end2))
+                {
+                    equalToEnd2 = keyValuePair.Key;
+                }
+            }
+            if (equalToEnd1 == toCompare)
+            {
+                Debug.Log("Такого элемента в графе и так нет");
+            }
+            else
+            {
+                Vector2Int innerEqualToEnd = toCompare;
+                foreach (KeyValuePair<Vector2Int, ElementBase> keyValuePair in graph[equalToEnd1])
+                {
+                    if (keyValuePair.Key.Equals(end2))
+                    {
+                        innerEqualToEnd = keyValuePair.Key;
+                    }
+                }
+                if (innerEqualToEnd == toCompare)
+                {
+                    Debug.Log("Такого элемента в графе и так нет");
+                }
+                else
+                {
+                    graph[equalToEnd1][innerEqualToEnd] = null;
+                }
+            }
+            // Удаляем вторую ссылку на элемент
+            if (equalToEnd2 == toCompare)
+            {
+                Debug.Log("Такого элемента в графе и так нет");
+            }
+            else
+            {
+                Vector2Int innerEqualToEnd = toCompare;
+                foreach (KeyValuePair<Vector2Int, ElementBase> keyValuePair in graph[equalToEnd2])
+                {
+                    if (keyValuePair.Key.Equals(end1))
+                    {
+                        innerEqualToEnd = keyValuePair.Key;
+                    }
+                }
+                if (innerEqualToEnd == toCompare)
+                {
+                    Debug.Log("Такого элемента в графе и так нет");
+                }
+                else
+                {
+                    graph[equalToEnd2][innerEqualToEnd] = null;
+                }
+            }
         }
     }
 }
