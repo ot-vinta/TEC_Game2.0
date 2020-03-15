@@ -150,8 +150,6 @@ public class TileEditor : MonoBehaviour
                  wire.pivotPosition.x >= pos.x && wire.secondPosition.x <= pos.x))
             {
                 selectedPos = wire.pivotPosition;
-                Debug.Log(pos);
-                Debug.Log(wire.pivotPosition);
                 return map.GetTile<Tile>(wire.pivotPosition);
             }
         }
@@ -252,6 +250,12 @@ public class TileEditor : MonoBehaviour
                 }
             }
             Scheme.AddElement(backupElement);
+            var angle = backupElement.angle;
+            Quaternion rotation = Quaternion.Euler(0, 0, angle);
+            var m = backupTile.transform;
+
+            m.SetTRS(Vector3.zero, rotation, Vector3.one);
+            backupTile.transform = m;
             map.SetTile(backupPos, backupTile);
             SetMove();
         }

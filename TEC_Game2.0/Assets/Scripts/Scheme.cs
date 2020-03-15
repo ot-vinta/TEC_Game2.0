@@ -5,6 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 using Assets.Models;
+using UnityEditor;
 using UnityEngine;
 
 namespace Assets.Scripts
@@ -63,15 +64,7 @@ namespace Assets.Scripts
 
         public static List<Wire> GetWiresList()
         {
-            List<Wire> ans = new List<Wire>();
-
-            foreach (var element in elements)
-            {
-                if (element.Value is Wire)
-                    ans.Add((Wire) element.Value);
-            }
-
-            return ans;
+            return (from element in elements where element.Value is Wire select (Wire) element.Value).ToList();
         }
 
         public static int GetWiresCount()
@@ -82,6 +75,21 @@ namespace Assets.Scripts
         public static int GetElementsCount()
         {
             return elements.Count;
+        }
+
+        public static List<ElementBase> GetNullorElementsList()
+        {
+            return elements.Values.Where(element => element is Nullator || element is Norator).ToList();
+        }
+
+        public static Nullator GetNullator()
+        {
+            return elements.Values.OfType<Nullator>().FirstOrDefault();
+        }
+
+        public static Norator GetNorator()
+        {
+            return elements.Values.OfType<Norator>().FirstOrDefault();
         }
 
         public static Elements ToSerializableElements()

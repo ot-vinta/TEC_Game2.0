@@ -170,41 +170,47 @@ public class TilePlacer : MonoBehaviour
         
         if (Input.GetMouseButtonDown(0) && !leftMousePressed && !PressedUnderButton())
         {
-            PlaceTile(Vector3.one, 1);
-            Destroy(empty);
-          
             Vector3Int pos = map.WorldToCell(sr.transform.position);
 
-            switch (type)
+            if (Scheme.GetElement(new Vector3Int(pos.x, pos.y, 1)) == null)
             {
-                case "Resistor":
-                    Resistor newRes = new Resistor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
-                    if (!String.IsNullOrEmpty(this.label))
-                    {
-                        newRes.SetName(this.label);
-                        newRes.FixLabel();
-                        this.label = null;
-                    }
-                    AddElementToScheme(newRes);
-                    break;
-                case "Conductor":
-                    Conductor newCon = new Conductor(new Vector3Int(pos.x, pos.y, 1), (int)angle);
-                    if (!String.IsNullOrEmpty(this.label))
-                    {
-                        newCon.SetName(this.label);
-                        newCon.FixLabel();
-                        this.label = null;
-                    }
-                    AddElementToScheme(newCon);
-                    break;
-                case "Nullator":
-                    AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
-                    break;
-                case "Norator":
-                    AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int)angle));
-                    break;
+                PlaceTile(Vector3.one, 1);
+                switch (type)
+                {
+                    case "Resistor":
+                        Resistor newRes = new Resistor(new Vector3Int(pos.x, pos.y, 1), (int) angle);
+                        if (!String.IsNullOrEmpty(this.label))
+                        {
+                            newRes.SetName(this.label);
+                            newRes.FixLabel();
+                            this.label = null;
+                        }
+
+                        AddElementToScheme(newRes);
+                        break;
+                    case "Conductor":
+                        Conductor newCon = new Conductor(new Vector3Int(pos.x, pos.y, 1), (int) angle);
+                        if (!String.IsNullOrEmpty(this.label))
+                        {
+                            newCon.SetName(this.label);
+                            newCon.FixLabel();
+                            this.label = null;
+                        }
+
+                        AddElementToScheme(newCon);
+                        break;
+                    case "Nullator":
+                        AddElementToScheme(new Nullator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+                        isInfinite = false;
+                        break;
+                    case "Norator":
+                        AddElementToScheme(new Norator(new Vector3Int(pos.x, pos.y, 1), (int) angle));
+                        isInfinite = false;
+                        break;
+                }
             }
-            //------------------------------------------------------
+
+            Destroy(empty);
 
             if (isInfinite)
                 Init(elementTile.name, 0, true);
