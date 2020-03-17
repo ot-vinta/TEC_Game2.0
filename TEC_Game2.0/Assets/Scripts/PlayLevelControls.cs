@@ -16,6 +16,7 @@ public class PlayLevelControls : MonoBehaviour
     UIInputBox dialog;
     UIList dialogList;
     private UIChooseBox chooseDialog;
+    private List<string> deletedElements;
     void Start()
     {
         map = GameObject.Find("Map");
@@ -23,6 +24,8 @@ public class PlayLevelControls : MonoBehaviour
         dialogList = new UIList();
 
         chooseDialog = new UIChooseBox();
+
+        deletedElements = new List<string>();
     }
 
     public void BackPressed()
@@ -132,6 +135,7 @@ public class PlayLevelControls : MonoBehaviour
             {
                 if (element is LabeledChainElement chainElement)
                 {
+                    deletedElements.Add(chainElement.labelStr + " (" + chainElement.ToString() + ")");
                     var label = chainElement.label;
                     Destroy(label);
                 }
@@ -155,12 +159,14 @@ public class PlayLevelControls : MonoBehaviour
 
     public void StatisticsPressed()
     {
-        dialog.SetOnClickListener(message =>
+        var elemArray = new string[deletedElements.Count];
+        int i = 0;
+        foreach (string elem in deletedElements)
         {
-            dialog.title.text = message;
-            return true;
-        });
-        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
+            elemArray[i] = elem;
+            i++;
+        }
+        dialogList.ShowDialog(elemArray);
     }
 
     private void Alarm(String text)
