@@ -38,8 +38,13 @@ namespace Assets.Scripts.utils
             }
         }
 
-        public void Restart()
+        public bool Restart()
         {
+            if (_backupElements.Count == 0)
+            {
+                return false;
+            }
+
             foreach (var element in Scheme.elements.Values)
             {
                 _map.SetTile(element.pivotPosition, new Tile());
@@ -52,6 +57,14 @@ namespace Assets.Scripts.utils
                 Scheme.AddElement(element);
                 _map.SetTile(element.pivotPosition, _backupTiles[element]);
             }
+
+            return true;
+        }
+
+        public void ClearBackup()
+        {
+            _backupElements.Clear();
+            _backupTiles.Clear();
         }
     }
 }

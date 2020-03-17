@@ -132,7 +132,7 @@ public class PlayLevelControls : MonoBehaviour
 
     public void RestartPressed()
     {
-        _backupController.Restart();
+        var isBackuped = _backupController.Restart();
     }
 
     public void StatisticsPressed()
