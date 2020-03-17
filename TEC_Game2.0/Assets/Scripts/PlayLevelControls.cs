@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using Assets.Scripts;
 using Assets.Scripts.SchemeSimplifying;
+using Assets.Scripts.utils;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.Tilemaps;
@@ -16,11 +17,14 @@ public class PlayLevelControls : MonoBehaviour
     UIInputBox dialog;
     UIList dialogList;
     private UIChooseBox chooseDialog;
+    private BackupController _backupController;
+
     void Start()
     {
         map = GameObject.Find("Map");
         dialog = new UIInputBox(new Vector2(350, 350));
         dialogList = new UIList();
+        _backupController = BackupController.GetInstance();
 
         chooseDialog = new UIChooseBox();
     }
@@ -117,11 +121,28 @@ public class PlayLevelControls : MonoBehaviour
         }
         else
         {
+            _backupController.Backup();
+
             var simplifier = new SchemeSimplifier(connectionGraph);
             var elementsToDelete = simplifier.Simplify();
 
             StartCoroutine(DeleteElements(elementsToDelete));
         }
+    }
+
+    public void RestartPressed()
+    {
+        _backupController.Restart();
+    }
+
+    public void StatisticsPressed()
+    {
+        dialog.SetOnClickListener(message =>
+        {
+            dialog.title.text = message;
+            return true;
+        });
+        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
     }
 
     private IEnumerator DeleteElements(Dictionary<int, List<ElementBase>> elementsToDelete)
@@ -148,38 +169,23 @@ public class PlayLevelControls : MonoBehaviour
         }
     }
 
-    public void RestartPressed()
+    private void Alarm(string text)
     {
-
-    }
-
-    public void StatisticsPressed()
-    {
-        dialog.SetOnClickListener(message =>
-        {
-            dialog.title.text = message;
-            return true;
-        });
-        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
-    }
-
-    private void Alarm(String text)
-    {
-        string[] elements = new string[1];
+        var elements = new string[1];
         elements[0] = text;
         dialogList.ShowDialog(elements);
     }
 
     private void ReplaceWithWire(ElementBase element)
     {
-        Vector3Int firstPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(true, element).x, ConnectionsMaker.GetConnectPosition(true, element).y, Scheme.GetWiresCount() + 2);
-        Vector3Int secondPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(false, element).x, ConnectionsMaker.GetConnectPosition(false, element).y, Scheme.GetWiresCount() + 2);
-        Wire wire = new Wire(firstPos, secondPos, element.angle);
+        var firstPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(true, element).x, ConnectionsMaker.GetConnectPosition(true, element).y, Scheme.GetWiresCount() + 2);
+        var secondPos = new Vector3Int(ConnectionsMaker.GetConnectPosition(false, element).x, ConnectionsMaker.GetConnectPosition(false, element).y, Scheme.GetWiresCount() + 2);
+        var wire = new Wire(firstPos, secondPos, element.angle);
 
         Scheme.AddElement(wire);
-        Texture2D texture = Resources.Load<Texture2D>("Sprites/HalfWireSprite");
+        var texture = Resources.Load<Texture2D>("Sprites/HalfWireSprite");
 
-        Tile tile = new Tile
+        var tile = new Tile
         {
             sprite = Sprite.Create(texture,
                 new Rect(0, 0, texture.width, texture.height),
@@ -191,10 +197,10 @@ public class PlayLevelControls : MonoBehaviour
             )
         };
 
-        float scale = wire.pivotPosition.x == wire.secondPosition.x
+        var scale = wire.pivotPosition.x == wire.secondPosition.x
             ? (Math.Abs(wire.pivotPosition.y - wire.secondPosition.y) + 0.01f) / 2
             : (Math.Abs(wire.pivotPosition.x - wire.secondPosition.x) + 0.01f) / 2;
-        Quaternion rotation = Quaternion.Euler(0, 0, element.angle);
+        var rotation = Quaternion.Euler(0, 0, element.angle);
 
         var m = tile.transform;
 
