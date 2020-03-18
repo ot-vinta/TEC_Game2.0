@@ -16,7 +16,7 @@ public class PlayLevelControls : MonoBehaviour
     UIInputBox dialog;
     UIList dialogList;
     private UIChooseBox chooseDialog;
-    private List<string> deletedElements;
+    private Dictionary<string, List<string>> deletedElements;
     void Start()
     {
         map = GameObject.Find("Map");
@@ -25,7 +25,7 @@ public class PlayLevelControls : MonoBehaviour
 
         chooseDialog = new UIChooseBox();
 
-        deletedElements = new List<string>();
+        deletedElements = new Dictionary<string, List<string>>();
     }
 
     public void BackPressed()
@@ -135,7 +135,19 @@ public class PlayLevelControls : MonoBehaviour
             {
                 if (element is LabeledChainElement chainElement)
                 {
-                    deletedElements.Add(chainElement.labelStr + " (" + chainElement.ToString() + ")");
+                    string elemType = chainElement.ToString();
+                    if (deletedElements.ContainsKey(elemType))
+                    {
+                        deletedElements[elemType].Add(chainElement.labelStr);
+                    }
+                    else
+                    {
+                        List<string> list = new List<string>
+                        {
+                            chainElement.labelStr
+                        };
+                        deletedElements.Add(elemType, list);
+                    }
                     var label = chainElement.label;
                     Destroy(label);
                 }
@@ -159,14 +171,17 @@ public class PlayLevelControls : MonoBehaviour
 
     public void StatisticsPressed()
     {
-        var elemArray = new string[deletedElements.Count];
-        int i = 0;
-        foreach (string elem in deletedElements)
+        List<string> arrayToShow = new List<string>();
+        
+        foreach (KeyValuePair<string,List<string>> elemType in deletedElements)
         {
-            elemArray[i] = elem;
-            i++;
+            arrayToShow.Add(elemType.Key + " (" + elemType.Value.Count + ")" + ":");
+            foreach(string elementName in elemType.Value)
+            {
+                arrayToShow.Add("– " + elementName);
+            }
         }
-        dialogList.ShowDialog(elemArray);
+        dialogList.ShowDialog(arrayToShow.ToArray());
     }
 
     private void Alarm(String text)
