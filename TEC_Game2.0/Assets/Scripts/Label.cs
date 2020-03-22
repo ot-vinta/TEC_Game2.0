@@ -43,15 +43,20 @@ public class Label : MonoBehaviour
             position = Camera.main.WorldToScreenPoint(position);
 
             UIInputBox dialog = new UIInputBox(position);
+			var title = "Введите название элемента\n(до 4-ёх символов)";
 
             dialog.SetOnClickListener(message =>
             {
-                element.SetName(message);
-                dialog.HideDialog();
-                GameObject.Destroy(dialog.dialogCanvas);
-                return true;
+				if (message.Length > 4)
+					dialog.title.text += "\nСлишком много символов!";
+				else{
+					element.SetName(message);
+					dialog.HideDialog();
+					GameObject.Destroy(dialog.dialogCanvas);
+				}
+				return true;
             });
-            dialog.ShowDialog("Введите название элемента");
+            dialog.ShowDialog(title);
         
 
             //element.SetName(Random.Range(0,999).ToString());
