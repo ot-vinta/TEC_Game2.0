@@ -57,6 +57,24 @@ namespace Assets.Scripts.utils
             foreach (var element in _backupElements)
             {
                 Scheme.AddElement(element);
+
+                if (element is LabeledChainElement labeledChainElement)
+                {
+                    labeledChainElement.AddLabel(
+                            labeledChainElement.labelStr, 
+                            labeledChainElement.pivotPosition
+                            );
+                    switch (labeledChainElement)
+                    {
+                        case Resistor resistor:
+                            resistor.FixLabel();
+                            break;
+                        case Conductor conductor:
+                            conductor.FixLabel();
+                            break;
+                    }
+                }
+
                 _map.SetTile(element.pivotPosition, _backupTiles[element]);
             }
 
