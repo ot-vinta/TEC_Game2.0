@@ -28429,6 +28429,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 4830213}
     m_Modifications:
+    - target: {fileID: 1982690131031381261, guid: 6e7de2c938a3847409fa174ccbb186be,
+        type: 3}
+      propertyPath: m_Name
+      value: Button
+      objectReference: {fileID: 0}
     - target: {fileID: 1982690130270308348, guid: 6e7de2c938a3847409fa174ccbb186be,
         type: 3}
       propertyPath: m_AnchoredPosition.x
@@ -28543,11 +28548,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Pivot.y
       value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 1982690131031381261, guid: 6e7de2c938a3847409fa174ccbb186be,
-        type: 3}
-      propertyPath: m_Name
-      value: Button
       objectReference: {fileID: 0}
     - target: {fileID: 1982690131031381263, guid: 6e7de2c938a3847409fa174ccbb186be,
         type: 3}
