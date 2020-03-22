@@ -16,8 +16,6 @@ namespace Assets.Scripts.utils
         {
             _backupElements = new List<ElementBase>();
             _backupTiles = new Dictionary<ElementBase, Tile>();
-
-            _map = GameObject.Find("Map").GetComponent<Tilemap>();
         }
 
         public static BackupController GetInstance()
@@ -30,6 +28,8 @@ namespace Assets.Scripts.utils
 
         public void Backup()
         {
+            _map = GameObject.Find("Map").GetComponent<Tilemap>();
+
             _backupTiles.Clear();
             _backupElements = new List<ElementBase>(Scheme.elements.Values);
             foreach (var element in _backupElements)
@@ -40,6 +40,8 @@ namespace Assets.Scripts.utils
 
         public bool Restart()
         {
+            _map = GameObject.Find("Map").GetComponent<Tilemap>();
+
             if (_backupElements.Count == 0)
             {
                 return false;
