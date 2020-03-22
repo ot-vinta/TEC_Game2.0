@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using Assets.Scripts.utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
@@ -39,7 +40,8 @@ namespace Assets.Scripts
         
         private void ChooseLevelTask(string levelName)
         {
-            JsonReader reader = new JsonReader();
+            var reader = new JsonReader();
+            BackupController.GetInstance().ClearBackup();
             reader.ConvertToObject(importPath + levelName);
             HideDialog();
         }
