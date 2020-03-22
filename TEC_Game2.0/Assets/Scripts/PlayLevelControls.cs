@@ -18,6 +18,7 @@ public class PlayLevelControls : MonoBehaviour
     UIList dialogList;
     private UIChooseBox chooseDialog;
     private BackupController _backupController;
+    private Dictionary<string, List<string>> deletedElements;
 
     void Start()
     {
@@ -27,6 +28,8 @@ public class PlayLevelControls : MonoBehaviour
         _backupController = BackupController.GetInstance();
 
         chooseDialog = new UIChooseBox();
+
+        deletedElements = new Dictionary<string, List<string>>();
     }
 
     public void BackPressed()
@@ -135,16 +138,6 @@ public class PlayLevelControls : MonoBehaviour
         var isBackuped = _backupController.Restart();
     }
 
-    public void StatisticsPressed()
-    {
-        dialog.SetOnClickListener(message =>
-        {
-            dialog.title.text = message;
-            return true;
-        });
-        dialog.ShowDialog("Проверка вызова из PlayLevelControls");
-    }
-
     private IEnumerator DeleteElements(Dictionary<int, List<ElementBase>> elementsToDelete)
     {
         foreach (var time in elementsToDelete.Keys)
@@ -153,6 +146,19 @@ public class PlayLevelControls : MonoBehaviour
             {
                 if (element is LabeledChainElement chainElement)
                 {
+                    string elemType = chainElement.ToString();
+                    if (deletedElements.ContainsKey(elemType))
+                    {
+                        deletedElements[elemType].Add(chainElement.labelStr);
+                    }
+                    else
+                    {
+                        List<string> list = new List<string>
+                        {
+                            chainElement.labelStr
+                        };
+                        deletedElements.Add(elemType, list);
+                    }
                     var label = chainElement.label;
                     Destroy(label);
                 }
@@ -169,6 +175,21 @@ public class PlayLevelControls : MonoBehaviour
         }
     }
 
+    public void StatisticsPressed()
+    {
+        List<string> arrayToShow = new List<string>();
+        
+        foreach (KeyValuePair<string,List<string>> elemType in deletedElements)
+        {
+            arrayToShow.Add(elemType.Key + " (" + elemType.Value.Count + ")" + ":");
+            foreach(string elementName in elemType.Value)
+            {
+                arrayToShow.Add("– " + elementName);
+            }
+        }
+        dialogList.ShowDialog(arrayToShow.ToArray());
+    }
+    
     private void Alarm(string text)
     {
         var elements = new string[1];
