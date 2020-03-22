@@ -31,11 +31,11 @@ public class UIList
     public void ShowDialog(string[] elements, string buttonText = "Ok")
     {
         TileEditor te = GameObject.FindObjectOfType<TileEditor>();
-        te.SetDefault();
+		if (te != null)
+			te.SetDefault();
         TilePlacer tp = GameObject.FindObjectOfType<TilePlacer>();
-        tp.CancelPlacing();
-
-
+		if (tp != null)
+			tp.CancelPlacing();
 
         dialogCanvas.SetActive(true);
         scrollRect.content.sizeDelta = new Vector2(0, 17 * elements.Length);
