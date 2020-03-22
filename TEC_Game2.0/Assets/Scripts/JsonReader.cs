@@ -143,6 +143,10 @@ namespace Assets.Scripts
         {
             foreach (var element in Scheme.elements.Values)
             {
+                if (element is LabeledChainElement labeledElem)
+                {
+                    GameObject.Destroy(labeledElem.label);
+                }
                 map.SetTile(element.pivotPosition, null);
             }
         }
