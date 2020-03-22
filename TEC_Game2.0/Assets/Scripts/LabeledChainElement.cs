@@ -25,7 +25,7 @@ namespace Assets.Scripts
             GameObject labels = GameObject.Find("Labels");
             Text template = labels.GetComponentInChildren<Text>();
             Tilemap tilemap = GameObject.FindObjectOfType<Tilemap>();
-            Vector3 worldPosition = new Vector3(tilemap.CellToWorld(position).x + (float) 0.3, tilemap.CellToWorld(position).y + (float) 0.1, tilemap.CellToWorld(position).z);
+            Vector3 worldPosition = new Vector3(tilemap.CellToWorld(position).x + (float) 0.25, tilemap.CellToWorld(position).y + (float) 0.29, tilemap.CellToWorld(position).z);
 
             this.label = UnityEngine.Object.Instantiate(template, worldPosition, Quaternion.identity, labels.transform);
 
@@ -37,7 +37,10 @@ namespace Assets.Scripts
         {
             if (angle % 180 != label.transform.eulerAngles.z % 180)
             {
+				Tilemap tilemap = GameObject.FindObjectOfType<Tilemap>();
+				
                 label.transform.Rotate(0, 0, (angle - label.transform.eulerAngles.z) % 180);
+                label.transform.Translate(-0.05f, 0, 0);
             }
         }
 

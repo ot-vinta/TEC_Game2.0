@@ -371,12 +371,12 @@ public class TilePlacer : MonoBehaviour
         Vector2 LeftDownPos = new Vector2(-8.9f + cameraPos.x, -5.0f + cameraPos.y);
         Vector2 RightUpPos = new Vector2(8.9f + cameraPos.x, 5.0f + cameraPos.y);
         Vector2 RightDownPos = new Vector2(8.9f + cameraPos.x, -5.0f + cameraPos.y);
-        Vector2 elementsRightUpPos = new Vector2(-1.5f + cameraPos.x, -3.7f + cameraPos.y);
-        Vector2 exportRightDownPos = new Vector2(-6.1f + cameraPos.x, 4.1f + cameraPos.y);
+        Vector2 elementsRightUpPos = new Vector2(-1.5f + cameraPos.x, -3.67f + cameraPos.y);
+        Vector2 exportRightDownPos = new Vector2(-6.1f + cameraPos.x, 4.07f + cameraPos.y);
         if (playButton != null) exportRightDownPos.x = -7.0f + cameraPos.x;
-        Vector2 editLeftUpPos = new Vector2(6.1f + cameraPos.x, -4.1f + cameraPos.y);
-        Vector2 PlayLeftDownPos = new Vector2(8.0f + cameraPos.x, 4.1f + cameraPos.y);
-        Vector2 StatsLeftDownPos = new Vector2(8.4f + cameraPos.x, 3.1f + cameraPos.y);
+        Vector2 editLeftUpPos = new Vector2(6.08f + cameraPos.x, -4.05f + cameraPos.y);
+        Vector2 PlayLeftDownPos = new Vector2(7.95f + cameraPos.x, 4.05f + cameraPos.y);
+        Vector2 StatsLeftDownPos = new Vector2(8.35f + cameraPos.x, 3.1f + cameraPos.y);
 
         bool ans = InRect(LeftUpPos, exportRightDownPos, mousePos) ||
                    InRect(LeftDownPos, elementsRightUpPos, mousePos) ||
