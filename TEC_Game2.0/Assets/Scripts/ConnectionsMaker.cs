@@ -20,40 +20,21 @@ namespace Assets.Scripts
             _marked = new Dictionary<Vector3Int, List<Vector3Int>>();
 
             var connections = new List<Vector2Int>();
-
-            foreach (var element in Scheme.GetNullorElementsList())
-            {
-                var leftPos = GetConnectPosition(true, element);
-                var rightPos = GetConnectPosition(false, element);
-
-                connections.Add(leftPos);
-                connections.Add(rightPos);
-
-                g.Add(leftPos, new Dictionary<Vector2Int, ElementBase>());
-                g.Add(rightPos, new Dictionary<Vector2Int, ElementBase>());
-                g[leftPos].Add(rightPos, element);
-                g[rightPos].Add(leftPos, element);
-
-                _schemeElements.Remove(element);
-            }
             
             wiresToCheck = new List<Wire>();
 
-            NextIteration(connections);
+            InitGraph();
 
             CheckWires();
 
             return g;
         }
 
-        private static void NextIteration(List<Vector2Int> connections)
+        private static void InitGraph()
         {
-            var connectionsForNextIteration = new List<Vector2Int>();
-
             foreach (var element in _schemeElements)
             {
                 Vector2Int leftPos, rightPos;
-                var isAddedToGraph = false;
 
                 if (element is Wire wire)
                 {
@@ -66,59 +47,31 @@ namespace Assets.Scripts
                     rightPos = GetConnectPosition(false, element);
                 }
 
-                foreach (var position in connections)
+                if (!g.ContainsKey(leftPos))
                 {
-                    if (position.Equals(leftPos))
-                    {
-                        if (!g[leftPos].ContainsKey(rightPos))
-                        {
-                            g[leftPos].Add(rightPos, element);
-                            isAddedToGraph = true;
-                        }
-
-                        if (g.ContainsKey(rightPos) && !g[rightPos].ContainsKey(leftPos))
-                        {
-                            g[rightPos].Add(leftPos, element);
-                            isAddedToGraph = true;
-                        }
-                        else if (!g.ContainsKey(rightPos))
-                        {
-                            g.Add(rightPos, new Dictionary<Vector2Int, ElementBase>());
-                            g[rightPos].Add(leftPos, element);
-
-                            connectionsForNextIteration.Add(rightPos);
-                            isAddedToGraph = true;
-                        }
-                    }
-
-                    if (!position.Equals(rightPos)) continue;
-                    if (!g[rightPos].ContainsKey(leftPos))
-                    {
-                        g[rightPos].Add(leftPos, element);
-                        isAddedToGraph = true;
-                    }
-
-                    if (g.ContainsKey(leftPos) && !g[leftPos].ContainsKey(rightPos))
-                    {
-                        g[leftPos].Add(rightPos, element);
-                        isAddedToGraph = true;
-                    }
-                    else if (!g.ContainsKey(leftPos))
-                    {
-                        g.Add(leftPos, new Dictionary<Vector2Int, ElementBase>());
-                        g[leftPos].Add(rightPos, element);
-
-                        connectionsForNextIteration.Add(leftPos);
-                        isAddedToGraph = true;
-                    }
+                    g.Add(leftPos, new Dictionary<Vector2Int, ElementBase>());
+                    g[leftPos].Add(rightPos, element);
+                }
+                else if (!g[leftPos].ContainsKey(rightPos))
+                {
+                    g[leftPos].Add(rightPos, element);
                 }
                 
-                if (isAddedToGraph && element is Wire wireToAdd)
-                    wiresToCheck.Add(wireToAdd);
-            }
+                if (!g.ContainsKey(rightPos))
+                {
+                    g.Add(rightPos, new Dictionary<Vector2Int, ElementBase>());
+                    g[rightPos].Add(leftPos, element);
+                }
+                else if (!g[rightPos].ContainsKey(leftPos))
+                {
+                    g[rightPos].Add(leftPos, element);
+                }
 
-            if (connectionsForNextIteration.Count > 0)
-                NextIteration(connectionsForNextIteration);
+                if (element is Wire temp)
+                {
+                    wiresToCheck.Add(temp);
+                }
+            }
         }
 
         private static void CheckWires()
