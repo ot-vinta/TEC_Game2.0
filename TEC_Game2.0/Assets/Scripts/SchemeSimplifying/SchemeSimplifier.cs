@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 namespace Assets.Scripts.SchemeSimplifying
 {
     class SchemeSimplifier
     {
-        private readonly Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> _connectionGraph;
+        private Dictionary<Vector2Int, Dictionary<Vector2Int, ElementBase>> _connectionGraph;
         private Dictionary<Vertex, Dictionary<Vertex, List<ElementBase>>> _graph;
         private Dictionary<ElementBase, List<Vertex>> _connectionsToElement;
         private Dictionary<ElementBase, int> _elementsToDelete;
@@ -31,6 +32,7 @@ namespace Assets.Scripts.SchemeSimplifying
             InitNullorVertices();
 
             _elementsToDelete = GetElementsToDelete();
+            AddWiresToDelete();
 
             var result = new Dictionary<int, List<ElementBase>>();
 
@@ -155,6 +157,95 @@ namespace Assets.Scripts.SchemeSimplifying
             } while (notMarkedCount > 0 && verticesInIteration.Count > 0 && someValue > 0);
 
             return deleteResult;
+        }
+
+        private void AddWiresToDelete()
+        {
+            var result = new Dictionary<ElementBase, int>();
+            
+            foreach (var pair in _elementsToDelete)
+            {
+                if (!(pair.Key is Conductor conductor)) continue;
+                
+                var wires = GetConnectedWires(conductor);
+
+                foreach (var wire in wires.Where(wire => !result.ContainsKey(wire)))
+                {
+                    result.Add(wire, _elementsToDelete[conductor]);
+                }
+            }
+
+            foreach (var pair in result)
+            {
+                _elementsToDelete.Add(pair.Key, pair.Value);
+            }
+        }
+
+        private List<Wire> GetConnectedWires(ElementBase conductor)
+        {
+            var markedElements = new List<ElementBase>();
+
+            var result = new List<Wire>();
+
+            var elementsInIteration = new List<ElementBase> {conductor};
+            while (elementsInIteration.Count > 0)
+            {
+                var elementsInNextIteration = new List<Wire>();
+                
+                foreach (var element in elementsInIteration)
+                {
+                    markedElements.Add(element);
+
+                    Vector2Int leftPos, rightPos;
+
+                    if (element is Wire temp)
+                    {
+                        leftPos  = (Vector2Int) temp.pivotPosition;
+                        rightPos = (Vector2Int) temp.secondPosition;
+                    }
+                    else
+                    {
+                        leftPos = ConnectionsMaker.GetConnectPosition(true, element);
+                        rightPos = ConnectionsMaker.GetConnectPosition(false, element);
+                    }
+
+                    var tempList = new List<Wire>();
+                    
+                    if (_connectionGraph[leftPos].Values.Count <= 2)
+                        foreach (var connectedElement in _connectionGraph[leftPos].Values)
+                        {
+                            if (!(connectedElement is Wire) && connectedElement != conductor)
+                            {
+                                tempList.Clear();
+                                break;
+                            }
+                            if (!markedElements.Contains(connectedElement))
+                                tempList.Add((Wire) connectedElement);
+                        }
+                    
+                    elementsInNextIteration.AddRange(tempList);
+                    tempList.Clear();
+                    
+                    if (_connectionGraph[rightPos].Values.Count <= 2)
+                        foreach (var connectedElement in _connectionGraph[rightPos].Values)
+                        {
+                            if (!(connectedElement is Wire) && connectedElement != conductor)
+                            {
+                                tempList.Clear();
+                                break;
+                            }
+                            if (!markedElements.Contains(connectedElement))
+                                tempList.Add((Wire) connectedElement);
+                        }
+                    
+                    elementsInNextIteration.AddRange(tempList);
+                }
+
+                elementsInIteration = new List<ElementBase>(elementsInNextIteration);
+                result.AddRange(elementsInNextIteration);
+            }
+
+            return result;
         }
 
         private bool ConnectedOnlyResistorAndNullor(Vertex rootVertex)
