@@ -46,7 +46,6 @@ public class TilePlacer : MonoBehaviour
 
         if (!wirePlacing)
         {
-            Debug.Log("TilePlacer.Update, !wirePlacing");
             MoveSprite();
             RotateSprite();
         }
